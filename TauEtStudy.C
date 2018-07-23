@@ -18,7 +18,7 @@ void TauEtStudy() {
 	Float_t L2Et[13][3];
 	Float_t L3Et[3][3];
 	Float_t HadEt[3][3];
-	Float_t EMEt[3][3];
+
     // Objects
     TLorentzVector* mctau = new TLorentzVector();
     
@@ -30,7 +30,6 @@ void TauEtStudy() {
     t->SetBranchAddress("L2CellEt[13][3]", &L2Et[0][0]);  // Assigns to address of first array element
 	t->SetBranchAddress("L3CellEt[3][3]", &L3Et[0][0]);  // Assigns to address of first array element
 	t->SetBranchAddress("HadCellEt[3][3]", &HadEt[0][0]);  // Assigns to address of first array element
-	t->SetBranchAddress("EMCellEt[3][3]", &EMEt[0][0]); // Assigns to address of first array element
     t->SetBranchAddress("mc_visibleTau", &mctau);
 
     // Now loop over all entries
@@ -127,7 +126,6 @@ void TauEtStudy() {
 				Reco_All_Et[i] += L0Et[j][k];
 				Reco_All_Et[i] += L3Et[j][k];
 				Reco_All_Et[i] += HadEt[j][k];
-				// Reco_All_Et[i] += EMEt[j][k];
 
 				// Calculate per-cell average energy when pre-processed to flip phi, loading peripheral energy to one side
 				if (L0flip == 0) {
@@ -303,23 +301,53 @@ void TauEtStudy() {
 	textfile << "Had" << endl;
 	textfile << "Total energy: " << Had_TotalEnergy << endl;
 	textfile << "1x1 energy: " << Had_1x1Energy << "	Ratio: " << Had_1x1Energy / Had_TotalEnergy << endl;
-	textfile << "3x1 energy: " << Had_3x1Energy << "	Ratio: " << Had_3x1Energy / Had_TotalEnergy << endl << endl << endl;
+	textfile << "3x1 energy: " << Had_3x1Energy << "	Ratio: " << Had_3x1Energy / Had_TotalEnergy << endl << endl;
 
+	textfile << "Reco 1 = (1x1, 5x3, 5x3, 3x3, 3x3)" << endl;
+	textfile << "Reco 2 = (3x3, 7x3, 5x3, 3x3, 3x3)" << endl;
+	textfile << "Reco All = (3x3, 13x3, 13x3, 3x3, 3x3)" << endl << endl << endl;
+ 
 	// Break 2-D array into 3 1-D array to feed into Graph2D
-	const Int_t ncolumns = 39;
-	Float_t AverageL2Et_Eta[ncolumns];
-	Float_t AverageL2Et_Phi[ncolumns];
-	Float_t AverageL2Et_Z[ncolumns];
-	Float_t AveragePhiFlippedL2Et_Z[ncolumns];
+	Int_t ncolumns_13x3 = 39;
+	Int_t ncolumns_3x3 = 9;
+	Float_t Eta_13x3[ncolumns_13x3];
+	Float_t Phi_13x3[ncolumns_13x3];
+	Float_t Eta_3x3[ncolumns_3x3];
+	Float_t Phi_3x3[ncolumns_3x3];
+	Float_t AverageL0Et_Z[ncolumns_3x3];
+	Float_t AveragePhiFlippedL0Et_Z[ncolumns_3x3];
+	Float_t AverageL1Et_Z[ncolumns_13x3];
+	Float_t AveragePhiFlippedL1Et_Z[ncolumns_13x3];
+	Float_t AverageL2Et_Z[ncolumns_13x3];
+	Float_t AveragePhiFlippedL2Et_Z[ncolumns_13x3];
+	Float_t AverageL3Et_Z[ncolumns_3x3];
+	Float_t AveragePhiFlippedL3Et_Z[ncolumns_3x3];
+	Float_t AverageHadEt_Z[ncolumns_3x3];
+	Float_t AveragePhiFlippedHadEt_Z[ncolumns_3x3];
 	Int_t eta;
 	Int_t phi;
-	for (Int_t i=0; i<ncolumns; i++) {
+	for (Int_t i=0; i<ncolumns_13x3; i++) {
 		eta = float(i%13);
 		phi = float(int(i/13));
-		AverageL2Et_Eta[i] = eta;
-		AverageL2Et_Phi[i] = phi;
+		Eta_13x3[i] = eta;
+		Phi_13x3[i] = phi;
+		AverageL1Et_Z[i] = AverageL1Et[eta][phi];
+		AveragePhiFlippedL1Et_Z[i] = AveragePhiFlippedL1Et[eta][phi];
 		AverageL2Et_Z[i] = AverageL2Et[eta][phi];
 		AveragePhiFlippedL2Et_Z[i] = AveragePhiFlippedL2Et[eta][phi];
+	}
+
+	for (Int_t i = 0; i < ncolumns_3x3; i++) {
+		eta = float(i % 3);
+		phi = float(int(i / 3));
+		Eta_3x3[i] = eta;
+		Phi_3x3[i] = phi;
+		AverageL0Et_Z[i] = AverageL0Et[eta][phi];
+		AveragePhiFlippedL0Et_Z[i] = AveragePhiFlippedL0Et[eta][phi];
+		AverageL3Et_Z[i] = AverageL3Et[eta][phi];
+		AveragePhiFlippedL3Et_Z[i] = AveragePhiFlippedL3Et[eta][phi];
+		AverageHadEt_Z[i] = AverageHadEt[eta][phi];
+		AveragePhiFlippedHadEt_Z[i] = AveragePhiFlippedHadEt[eta][phi];
 	}
 
 	// Create 1-D array of middle row energies
@@ -343,22 +371,88 @@ void TauEtStudy() {
     // Now draw the plots.  Put each on a separate page.
 
 	// 1-D plot of middle row
-	TGraph *gr0 = new TGraph(ncellsinrow, AverageL2Et_Eta, AverageL2Et_MiddleRow);
+	TGraph *gr0 = new TGraph(ncellsinrow, Eta_13x3, AverageL2Et_MiddleRow);
 	gr0->SetTitle("Average L2 Et (Middle Row)");
 	gr0->GetXaxis()->SetTitle("Eta");
 	gr0->GetYaxis()->SetTitle("Et (GeV)");
 
 	// 2-D plots of all cells
-    TGraph2D *gr1 = new TGraph2D(ncolumns, AverageL2Et_Eta, AverageL2Et_Phi, AverageL2Et_Z);
-	gr1->SetTitle("Average L2 Et");
+	TGraph2D *gr1 = new TGraph2D(ncolumns_3x3, Eta_3x3, Phi_3x3, AverageL0Et_Z);
+	gr1->SetName("ave_l0_et");
+	gr1->SetTitle("Average L0 Et");
 	gr1->GetXaxis()->SetTitle("Eta");
 	gr1->GetYaxis()->SetTitle("Phi");
 	gr1->GetZaxis()->SetTitle("Et (GeV)");
-	TGraph2D *gr2 = new TGraph2D(ncolumns, AverageL2Et_Eta, AverageL2Et_Phi, AveragePhiFlippedL2Et_Z);
-	gr2->SetTitle("Average L2 Flipped Et");
+	gr1->SetMinimum(0);
+	gr1->SetMaximum(1);
+	TGraph2D *gr2 = new TGraph2D(ncolumns_3x3, Eta_3x3, Phi_3x3, AveragePhiFlippedL0Et_Z);
+	gr2->SetName("ave_l0_flip_et");
+	gr2->SetTitle("Average L0 Flipped Et");
 	gr2->GetXaxis()->SetTitle("Eta");
 	gr2->GetYaxis()->SetTitle("Phi");
 	gr2->GetZaxis()->SetTitle("Et (GeV)");
+	gr2->SetMinimum(0);
+	gr2->SetMaximum(1);
+
+	TGraph2D *gr3 = new TGraph2D(ncolumns_13x3, Eta_13x3, Phi_13x3, AverageL1Et_Z);
+	gr3->SetName("ave_l1_et");
+	gr3->SetTitle("Average L1 Et");
+	gr3->GetXaxis()->SetTitle("Eta");
+	gr3->GetYaxis()->SetTitle("Phi");
+	gr3->GetZaxis()->SetTitle("Et (GeV)");
+	TGraph2D *gr4 = new TGraph2D(ncolumns_13x3, Eta_13x3, Phi_13x3, AveragePhiFlippedL1Et_Z);
+	gr4->SetName("ave_l1_flip_et");
+	gr4->SetTitle("Average L1 Flipped Et");
+	gr4->GetXaxis()->SetTitle("Eta");
+	gr4->GetYaxis()->SetTitle("Phi");
+	gr4->GetZaxis()->SetTitle("Et (GeV)");
+
+    TGraph2D *gr5 = new TGraph2D(ncolumns_13x3, Eta_13x3, Phi_13x3, AverageL2Et_Z);
+	gr5->SetName("ave_l2_et");
+	gr5->SetTitle("Average L2 Et");
+	gr5->GetXaxis()->SetTitle("Eta");
+	gr5->GetYaxis()->SetTitle("Phi");
+	gr5->GetZaxis()->SetTitle("Et (GeV)");
+	TGraph2D *gr6 = new TGraph2D(ncolumns_13x3, Eta_13x3, Phi_13x3, AveragePhiFlippedL2Et_Z);
+	gr6->SetName("ave_l2_flip_et");
+	gr6->SetTitle("Average L2 Flipped Et");
+	gr6->GetXaxis()->SetTitle("Eta");
+	gr6->GetYaxis()->SetTitle("Phi");
+	gr6->GetZaxis()->SetTitle("Et (GeV)");
+
+	TGraph2D *gr7 = new TGraph2D(ncolumns_3x3, Eta_3x3, Phi_3x3, AverageL3Et_Z);
+	gr7->SetName("ave_3_et");
+	gr7->SetTitle("Average L3 Et");
+	gr7->GetXaxis()->SetTitle("Eta");
+	gr7->GetYaxis()->SetTitle("Phi");
+	gr7->GetZaxis()->SetTitle("Et (GeV)");
+	gr7->SetMinimum(0);
+	gr7->SetMaximum(0.5);
+	TGraph2D *gr8 = new TGraph2D(ncolumns_3x3, Eta_3x3, Phi_3x3, AveragePhiFlippedL3Et_Z);
+	gr8->SetName("ave_l3_flip_et");
+	gr8->SetTitle("Average L3 Flipped Et");
+	gr8->GetXaxis()->SetTitle("Eta");
+	gr8->GetYaxis()->SetTitle("Phi");
+	gr8->GetZaxis()->SetTitle("Et (GeV)");
+	gr8->SetMinimum(0);
+	gr8->SetMaximum(0.5);
+
+	TGraph2D *gr9 = new TGraph2D(ncolumns_3x3, Eta_3x3, Phi_3x3, AverageHadEt_Z);
+	gr9->SetName("ave_had_et");
+	gr9->SetTitle("Average Had Et");
+	gr9->GetXaxis()->SetTitle("Eta");
+	gr9->GetYaxis()->SetTitle("Phi");
+	gr9->GetZaxis()->SetTitle("Et (GeV)");
+	gr9->SetMinimum(0);
+	gr9->SetMaximum(3);
+	TGraph2D *gr10 = new TGraph2D(ncolumns_3x3, Eta_3x3, Phi_3x3, AveragePhiFlippedHadEt_Z);
+	gr10->SetName("ave_had_flip_et");
+	gr10->SetTitle("Average Had Flipped Et");
+	gr10->GetXaxis()->SetTitle("Eta");
+	gr10->GetYaxis()->SetTitle("Phi");
+	gr10->GetZaxis()->SetTitle("Et (GeV)");
+	gr10->SetMinimum(0);
+	gr10->SetMaximum(3);
 
 	// Create histograms for true - reconstructed energies
 	TH1F* h1 = new TH1F("reco1 - true", "Reco 1 Et - True Et; Et (GeV); Entries", 100, -100., 50.);
@@ -371,7 +465,6 @@ void TauEtStudy() {
 	// Fill histograms with samples whose true Et is greater than 20 GeV
 	for (Int_t i = 0; i < nentries; i++) {
 		if (TrueEt[i] > 20.) {
-			cout << "True Et: " << TrueEt[i] << endl;
 			h1->Fill(Reco_1_Et[i] - TrueEt[i]);
 			h2->Fill(Reco_2_Et[i] - TrueEt[i]);
 			h3->Fill(Reco_All_Et[i] - TrueEt[i]);
@@ -386,12 +479,34 @@ void TauEtStudy() {
 	gr0->Draw();
 	c1->Print("TauEtStudy.pdf(");
 
-	gr1->SetFillColor(50);
 	gr1->Draw("P0");
-
     c1->Print("TauEtStudy.pdf");
 
 	gr2->Draw("P0");
+	c1->Print("TauEtStudy.pdf");
+
+	gr3->Draw("P0");
+	c1->Print("TauEtStudy.pdf");
+
+	gr4->Draw("P0");
+	c1->Print("TauEtStudy.pdf");
+
+	gr5->Draw("P0");
+	c1->Print("TauEtStudy.pdf");
+
+	gr6->Draw("P0");
+	c1->Print("TauEtStudy.pdf");
+
+	gr7->Draw("P0");
+	c1->Print("TauEtStudy.pdf");
+
+	gr8->Draw("P0");
+	c1->Print("TauEtStudy.pdf");
+
+	gr9->Draw("P0");
+	c1->Print("TauEtStudy.pdf");
+
+	gr10->Draw("P0");
 	c1->Print("TauEtStudy.pdf");
 
 	h1->Draw();
