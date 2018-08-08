@@ -111,7 +111,7 @@ void AddReco2Contribution(Int_t entry, Int_t eta, Int_t phi, Int_t numberofentri
 	}
 }
 
-// Add energies of current cells to the reconstruction energy with definition 3 (2x1, 5x2, 5x2, 1x2, 3x3)
+// Add energies of current cells to the reconstruction energy with definition 3 (1x2, 5x2, 5x2, 1x2, 3x3)
 void AddReco3Contribution(Int_t entry, Int_t eta, Int_t phi, Int_t numberofentries, Float_t Reco3_Et[], Float_t L0_Reco_Et_Holder, 
 	Float_t L1_Reco_Et_Holder, Float_t L2_Reco_Et_Holder, Float_t L3_Reco_Et_Holder, Float_t Had_Reco_Et_Holder) {
 	if (eta < 3 && phi < 3) {
@@ -127,6 +127,22 @@ void AddReco3Contribution(Int_t entry, Int_t eta, Int_t phi, Int_t numberofentri
 	}
 }
 
+// Add energies of current cells to the reconstruction energy with definition 3 (1x3, 5x3, 5x3, 1x3, 3x3)
+void AddReco3AContribution(Int_t entry, Int_t eta, Int_t phi, Int_t numberofentries, Float_t Reco3A_Et[], Float_t L0_Reco_Et_Holder,
+	Float_t L1_Reco_Et_Holder, Float_t L2_Reco_Et_Holder, Float_t L3_Reco_Et_Holder, Float_t Had_Reco_Et_Holder) {
+	if (eta < 3) {
+		Reco3A_Et[entry] += Had_Reco_Et_Holder;
+	}
+	if (eta == 1) {
+		Reco3A_Et[entry] += L0_Reco_Et_Holder;
+		Reco3A_Et[entry] += L3_Reco_Et_Holder;
+	}
+	if (eta > 3 && eta < 9) {
+		Reco3A_Et[entry] += L1_Reco_Et_Holder;
+		Reco3A_Et[entry] += L2_Reco_Et_Holder;
+	}
+}
+
 // Add energies of current cells to the reconstruction energy with definition 4 (1x2, 5x2, 5x2, 1x2, None)
 void AddReco4Contribution(Int_t entry, Int_t eta, Int_t phi, Int_t numberofentries, Float_t Reco4_Et[], Float_t L0_Reco_Et_Holder,
 	Float_t L1_Reco_Et_Holder, Float_t L2_Reco_Et_Holder, Float_t L3_Reco_Et_Holder, Float_t Had_Reco_Et_Holder) {
@@ -137,6 +153,27 @@ void AddReco4Contribution(Int_t entry, Int_t eta, Int_t phi, Int_t numberofentri
 	if (eta > 3 && eta < 9 && phi < 2) {
 		Reco4_Et[entry] += L1_Reco_Et_Holder;
 		Reco4_Et[entry] += L2_Reco_Et_Holder;
+	}
+}
+
+// Add energies of current cells to the reconstruction energy with definition 5 (1x2, 5x2, 5x2, None, None)
+void AddReco5Contribution(Int_t entry, Int_t eta, Int_t phi, Int_t numberofentries, Float_t Reco5_Et[], Float_t L0_Reco_Et_Holder,
+	Float_t L1_Reco_Et_Holder, Float_t L2_Reco_Et_Holder, Float_t L3_Reco_Et_Holder, Float_t Had_Reco_Et_Holder) {
+	if (eta == 1 && phi < 2) {
+		Reco5_Et[entry] += L0_Reco_Et_Holder;
+	}
+	if (eta > 3 && eta < 9 && phi < 2) {
+		Reco5_Et[entry] += L1_Reco_Et_Holder;
+		Reco5_Et[entry] += L2_Reco_Et_Holder;
+	}
+}
+
+// Add energies of current cells to the reconstruction energy with definition 6 (None, 5x2, 5x2, None, None)
+void AddReco6Contribution(Int_t entry, Int_t eta, Int_t phi, Int_t numberofentries, Float_t Reco6_Et[], Float_t L0_Reco_Et_Holder,
+	Float_t L1_Reco_Et_Holder, Float_t L2_Reco_Et_Holder, Float_t L3_Reco_Et_Holder, Float_t Had_Reco_Et_Holder) {
+	if (eta > 3 && eta < 9 && phi < 2) {
+		Reco6_Et[entry] += L1_Reco_Et_Holder;
+		Reco6_Et[entry] += L2_Reco_Et_Holder;
 	}
 }
 
@@ -247,7 +284,37 @@ void FillRecoHistograms(TH1* sighist, TH1* backhist, TH1* sigminustruehist, Int_
 	}
 }
 
+void OutputText3x3EtSubsets(ofstream& writefile, string LayerName, Float_t AverageLayerEt, Float_t Average1x1Et, Float_t Average1x2Et,
+	Float_t Average1x3Et) {
+	writefile << LayerName << endl;
+	writefile << "Total energy: " << AverageLayerEt << endl;
+	writefile << "1x1 energy: " << Average1x1Et << "	Ratio: " << Average1x1Et / AverageLayerEt << endl;
+	writefile << "1x2 energy: " << Average1x2Et << "	Ratio: " << Average1x2Et / AverageLayerEt << endl;
+	writefile << "1x3 energy: " << Average1x3Et << "	Ratio: " << Average1x3Et / AverageLayerEt << endl << endl;
+}
 
+void OutputText13x3EtSubsets(ofstream& writefile, string LayerName, Float_t AverageLayerEt, Float_t Average3x3Et, Float_t Average5x3Et,
+	Float_t Average7x3Et, Float_t Average9x3Et, Float_t Average11x3Et) {
+	writefile << LayerName << endl;
+	writefile << "Total energy: " << AverageLayerEt << endl;
+	writefile << "3x3 energy: " << Average3x3Et << "		Ratio: " << Average3x3Et / AverageLayerEt << endl;
+	writefile << "5x3 energy: " << Average5x3Et << "		Ratio: " << Average5x3Et / AverageLayerEt << endl;
+	writefile << "7x3 energy: " << Average7x3Et << "		Ratio: " << Average7x3Et / AverageLayerEt << endl;
+	writefile << "9x3 energy: " << Average9x3Et << "		Ratio: " << Average9x3Et / AverageLayerEt << endl;
+	writefile << "11x3 energy: " << Average11x3Et << "		Ratio: " << Average11x3Et / AverageLayerEt << endl << endl;
+}
+
+void Output90PercentSignalInfo(ofstream& writefile, string RecoName, Int_t netcuts, Float_t Sig_EtCutEfficiency[], Float_t Back_EtCutEfficiency[]) {
+	for (Int_t i = 0; i < netcuts; i++) {
+		if (Sig_EtCutEfficiency[netcuts - i - 1] > 0.9) {
+			writefile << RecoName << endl;
+			writefile << "Et Cut (GeV): " << i << endl;
+			writefile << "Signal Efficiency: " << Sig_EtCutEfficiency[netcuts - i - 1] << endl;
+			writefile << "Background Efficiency: " << Back_EtCutEfficiency[netcuts - i - 1] << endl << endl;
+			break;
+		}
+	}
+}
 
 // Main function here
 void TauEtStudy() {
@@ -312,9 +379,24 @@ void TauEtStudy() {
 	Float_t TrueEt[sigentries];
 	Float_t Reco1_Sig_Et[sigentries]; // Reconstructed signal energy using the following substructures (1x1, 5x3, 5x3, 3x3, 3x3)
 	Float_t Reco2_Sig_Et[sigentries]; // Reconstructed signal energy using the following substructures (3x3, 7x3, 5x3, 3x3, 3x3)
-	Float_t Reco3_Sig_Et[sigentries]; // Reconstructed signal energy using the following substructures (2x1, 5x2, 5x2, 2x1, 3x3). Done post-pre-processing
-	Float_t Reco4_Sig_Et[sigentries]; // Reconstructed signal energy using the following substructures (2x1, 5x2, 5x2, 2x1, None). Done post-pre-processing
+	Float_t Reco3_Sig_Et[sigentries]; // Reconstructed signal energy using the following substructures (1x2, 5x2, 5x2, 1x2, 3x3). Done post-pre-processing
+	Float_t Reco3A_Sig_Et[sigentries]; // Reconstructed signal energy using the following substructures (1x3, 5x3, 5x3, 1x3, 3x3). Done post-pre-processing
+	Float_t Reco3B_Sig_Et[sigentries]; // Reconstructed signal energy using the following substructures (1x3, 5x3, 5x3, 1x3, 3x3). Done without pre-processing
+	Float_t Reco4_Sig_Et[sigentries]; // Reconstructed signal energy using the following substructures (1x2, 5x2, 5x2, 1x2, None). Done post-pre-processing
+	Float_t Reco5_Sig_Et[sigentries]; // Reconstructed signal energy using the following substructures (1x2, 5x2, 5x2, None, None). Done post-pre-processing
+	Float_t Reco6_Sig_Et[sigentries]; // Reconstructed signal energy using the following substructures (None, 5x2, 5x2, None, None). Done post-pre-processing
 	Float_t RecoAll_Sig_Et[sigentries];
+
+	// Create string variables holding reconstructed energy definitions
+	string Reco1_DefString = "(1x1, 5x3, 5x3, 3x3, 3x3)";
+	string Reco2_DefString = "(3x3, 7x3, 5x3, 3x3, 3x3)";
+	string Reco3_DefString = "(1x2, 5x2, 5x2, 1x2, 3x3)";
+	string Reco3A_DefString = "(1x3, 5x3, 5x3, 1x3, 3x3)";
+	string Reco3B_DefString = "(1x3, 5x3, 5x3, 1x3, 3x3)";
+	string Reco4_DefString = "(1x2, 5x2, 5x2, 1x2, None)";
+	string Reco5_DefString = "(1x2, 5x2, 5x2, None, None)";
+	string Reco6_DefString = "(None, 5x2, 5x2, None, None)";
+	string RecoAll_DefString = "(3x3, 13x3, 13x3, 3x3, 3x3)";
 
 	// Background variables
     Int_t backentries = (Int_t)tback->GetEntries();
@@ -330,8 +412,12 @@ void TauEtStudy() {
 	Float_t Had_AverageFlipCell_Back_Et[3][3] = { 0 };
 	Float_t Reco1_Back_Et[backentries]; // Reconstructed background energy using the following substructures (1x1, 5x3, 5x3, 3x3, 3x3)
 	Float_t Reco2_Back_Et[backentries]; // Reconstructed background energy using the following substructures (3x3, 7x3, 5x3, 3x3, 3x3)
-	Float_t Reco3_Back_Et[backentries]; // Reconstructed background energy using the following substructures (2x1, 5x2, 5x2, 2x1, 3x3). Done post-pre-processing
-	Float_t Reco4_Back_Et[backentries]; // Reconstructed background energy using the following substructures (2x1, 5x2, 5x2, 2x1, None). Done post-pre-processing
+	Float_t Reco3_Back_Et[backentries]; // Reconstructed background energy using the following substructures (1x2, 5x2, 5x2, 1x2, 3x3). Done post-pre-processing
+	Float_t Reco3A_Back_Et[backentries]; // Reconstructed background energy using the following substructures (1x3, 5x3, 5x3, 1x3, 3x3). Done post-pre-processing
+	Float_t Reco3B_Back_Et[backentries]; // Reconstructed background energy using the following substructures (1x3, 5x3, 5x3, 1x3, 3x3). Done without pre-processing
+	Float_t Reco4_Back_Et[backentries]; // Reconstructed background energy using the following substructures (1x2, 5x2, 5x2, 1x2, None). Done post-pre-processing
+	Float_t Reco5_Back_Et[backentries]; // Reconstructed background energy using the following substructures (1x2, 5x2, 5x2, None, None). Done post-pre-processing
+	Float_t Reco6_Back_Et[backentries]; // Reconstructed background energy using the following substructures (None, 5x2, 5x2, None, None). Done post-pre-processing
 	Float_t RecoAll_Back_Et[backentries];
 
 	// Number of events above Et threshold
@@ -342,8 +428,16 @@ void TauEtStudy() {
 	Int_t N_Reco2_Sig_EtCut[netcuts] = { 0 };
 	Int_t N_Reco3_Back_EtCut[netcuts] = { 0 };
 	Int_t N_Reco3_Sig_EtCut[netcuts] = { 0 };
+	Int_t N_Reco3A_Back_EtCut[netcuts] = { 0 };
+	Int_t N_Reco3A_Sig_EtCut[netcuts] = { 0 };
+	Int_t N_Reco3B_Back_EtCut[netcuts] = { 0 };
+	Int_t N_Reco3B_Sig_EtCut[netcuts] = { 0 };
 	Int_t N_Reco4_Back_EtCut[netcuts] = { 0 };
 	Int_t N_Reco4_Sig_EtCut[netcuts] = { 0 };
+	Int_t N_Reco5_Back_EtCut[netcuts] = { 0 };
+	Int_t N_Reco5_Sig_EtCut[netcuts] = { 0 };
+	Int_t N_Reco6_Back_EtCut[netcuts] = { 0 };
+	Int_t N_Reco6_Sig_EtCut[netcuts] = { 0 };
 	Int_t N_RecoAll_Back_EtCut[netcuts] = { 0 };
 	Int_t N_RecoAll_Sig_EtCut[netcuts] = { 0 };
 
@@ -355,7 +449,11 @@ void TauEtStudy() {
 		Reco1_Sig_Et[i] = 0;
 		Reco2_Sig_Et[i] = 0;
 		Reco3_Sig_Et[i] = 0;
+		Reco3A_Sig_Et[i] = 0;
+		Reco3B_Sig_Et[i] = 0;
 		Reco4_Sig_Et[i] = 0;
+		Reco5_Sig_Et[i] = 0;
+		Reco6_Sig_Et[i] = 0;
 		RecoAll_Sig_Et[i] = 0;
 
 		// if (TrueEt[i] < 20.) continue;
@@ -401,8 +499,29 @@ void TauEtStudy() {
 				// Reconstruction definition 3
 				AddReco3Contribution(i, j, k, sigentries, Reco3_Sig_Et, L0_Reco_Et_Holder, L1_Reco_Et_Holder, L2_Reco_Et_Holder,
 					L3_Reco_Et_Holder, Had_Reco_Et_Holder);
+				// Reconstruction definition 3A
+				AddReco3AContribution(i, j, k, sigentries, Reco3A_Sig_Et, L0_Reco_Et_Holder, L1_Reco_Et_Holder, L2_Reco_Et_Holder,
+					L3_Reco_Et_Holder, Had_Reco_Et_Holder);
+				// Reconstruction definition 3B, done manually as the holder variables are pre-processed
+				if (j < 3) {
+					Reco3B_Sig_Et[i] += Had_Sig_Et[j][k];
+				}
+				if (j == 1) {
+					Reco3B_Sig_Et[i] += L0_Sig_Et[j][k];
+					Reco3B_Sig_Et[i] += L3_Sig_Et[j][k];
+				}
+				if (j > 3 && j < 9) {
+					Reco3B_Sig_Et[i] += L1_Sig_Et[j][k];
+					Reco3B_Sig_Et[i] += L2_Sig_Et[j][k];
+				}
 				// Reconstruction definition 4
 				AddReco4Contribution(i, j, k, sigentries, Reco4_Sig_Et, L0_Reco_Et_Holder, L1_Reco_Et_Holder, L2_Reco_Et_Holder,
+					L3_Reco_Et_Holder, Had_Reco_Et_Holder);
+				// Reconstruction definition 5
+				AddReco5Contribution(i, j, k, sigentries, Reco5_Sig_Et, L0_Reco_Et_Holder, L1_Reco_Et_Holder, L2_Reco_Et_Holder,
+					L3_Reco_Et_Holder, Had_Reco_Et_Holder);
+				// Reconstruction definition 6
+				AddReco6Contribution(i, j, k, sigentries, Reco6_Sig_Et, L0_Reco_Et_Holder, L1_Reco_Et_Holder, L2_Reco_Et_Holder,
 					L3_Reco_Et_Holder, Had_Reco_Et_Holder);
 				// Reconstruction all definition
 				AddRecoAllContribution(i, j, k, sigentries, RecoAll_Sig_Et, L0_Reco_Et_Holder, L1_Reco_Et_Holder, L2_Reco_Et_Holder,
@@ -414,14 +533,22 @@ void TauEtStudy() {
 		Reco1_Sig_Et[i] /= 1000.;
 		Reco2_Sig_Et[i] /= 1000.;
 		Reco3_Sig_Et[i] /= 1000.;
+		Reco3A_Sig_Et[i] /= 1000.;
+		Reco3B_Sig_Et[i] /= 1000.;
 		Reco4_Sig_Et[i] /= 1000.;
+		Reco5_Sig_Et[i] /= 1000.;
+		Reco6_Sig_Et[i] /= 1000.;
 		RecoAll_Sig_Et[i] /= 1000.;
 
 		// For each event, increment appropriate Et counters
 		IncrementEtCounters(i, netcuts, Reco1_Sig_Et, N_Reco1_Sig_EtCut);
 		IncrementEtCounters(i, netcuts, Reco2_Sig_Et, N_Reco2_Sig_EtCut);
 		IncrementEtCounters(i, netcuts, Reco3_Sig_Et, N_Reco3_Sig_EtCut);
+		IncrementEtCounters(i, netcuts, Reco3A_Sig_Et, N_Reco3A_Sig_EtCut);
+		IncrementEtCounters(i, netcuts, Reco3B_Sig_Et, N_Reco3B_Sig_EtCut);
 		IncrementEtCounters(i, netcuts, Reco4_Sig_Et, N_Reco4_Sig_EtCut);
+		IncrementEtCounters(i, netcuts, Reco5_Sig_Et, N_Reco5_Sig_EtCut);
+		IncrementEtCounters(i, netcuts, Reco6_Sig_Et, N_Reco6_Sig_EtCut);
 		IncrementEtCounters(i, netcuts, RecoAll_Sig_Et, N_RecoAll_Sig_EtCut);
 	}
 
@@ -434,7 +561,11 @@ void TauEtStudy() {
 		Reco1_Back_Et[i] = 0;
 		Reco2_Back_Et[i] = 0;
 		Reco3_Back_Et[i] = 0;
+		Reco3A_Back_Et[i] = 0;
+		Reco3B_Back_Et[i] = 0;
 		Reco4_Back_Et[i] = 0;
+		Reco5_Back_Et[i] = 0;
+		Reco6_Back_Et[i] = 0;
 		RecoAll_Back_Et[i] = 0;
 
 		// Set flag for preprocessing if necessary by considering sum of off-center phi cells for all layers
@@ -477,8 +608,29 @@ void TauEtStudy() {
 				// Reconstruction definition 3
 				AddReco3Contribution(i, j, k, backentries, Reco3_Back_Et, L0_Reco_Et_Holder, L1_Reco_Et_Holder, L2_Reco_Et_Holder,
 					L3_Reco_Et_Holder, Had_Reco_Et_Holder);
+				// Reconstruction definition 3A
+				AddReco3AContribution(i, j, k, backentries, Reco3A_Back_Et, L0_Reco_Et_Holder, L1_Reco_Et_Holder, L2_Reco_Et_Holder,
+					L3_Reco_Et_Holder, Had_Reco_Et_Holder);
+				// Reconstruction definition 3B, done manually as the holder variables are pre-processed
+				if (j < 3) {
+					Reco3B_Back_Et[i] += Had_Back_Et[j][k];
+				}
+				if (j == 1) {
+					Reco3B_Back_Et[i] += L0_Back_Et[j][k];
+					Reco3B_Back_Et[i] += L3_Back_Et[j][k];
+				}
+				if (j > 3 && j < 9) {
+					Reco3B_Back_Et[i] += L1_Back_Et[j][k];
+					Reco3B_Back_Et[i] += L2_Back_Et[j][k];
+				}
 				// Reconstruction definition 4
 				AddReco4Contribution(i, j, k, backentries, Reco4_Back_Et, L0_Reco_Et_Holder, L1_Reco_Et_Holder, L2_Reco_Et_Holder,
+					L3_Reco_Et_Holder, Had_Reco_Et_Holder);
+				// Reconstruction definition 5
+				AddReco5Contribution(i, j, k, backentries, Reco5_Back_Et, L0_Reco_Et_Holder, L1_Reco_Et_Holder, L2_Reco_Et_Holder,
+					L3_Reco_Et_Holder, Had_Reco_Et_Holder);
+				// Reconstruction definition 6
+				AddReco6Contribution(i, j, k, backentries, Reco6_Back_Et, L0_Reco_Et_Holder, L1_Reco_Et_Holder, L2_Reco_Et_Holder,
 					L3_Reco_Et_Holder, Had_Reco_Et_Holder);
 				// Reconstruction all definition
 				AddRecoAllContribution(i, j, k, backentries, RecoAll_Back_Et, L0_Reco_Et_Holder, L1_Reco_Et_Holder, L2_Reco_Et_Holder,
@@ -490,14 +642,22 @@ void TauEtStudy() {
 		Reco1_Back_Et[i] /= 1000.;
 		Reco2_Back_Et[i] /= 1000.;
 		Reco3_Back_Et[i] /= 1000.;
+		Reco3A_Back_Et[i] /= 1000.;
+		Reco3B_Back_Et[i] /= 1000.;
 		Reco4_Back_Et[i] /= 1000.;
+		Reco5_Back_Et[i] /= 1000.;
+		Reco6_Back_Et[i] /= 1000.;
 		RecoAll_Back_Et[i] /= 1000.;
 
 		// For each event, increment appropriate Et counters
 		IncrementEtCounters(i, netcuts, Reco1_Back_Et, N_Reco1_Back_EtCut);
 		IncrementEtCounters(i, netcuts, Reco2_Back_Et, N_Reco2_Back_EtCut);
 		IncrementEtCounters(i, netcuts, Reco3_Back_Et, N_Reco3_Back_EtCut);
+		IncrementEtCounters(i, netcuts, Reco3A_Back_Et, N_Reco3A_Back_EtCut);
+		IncrementEtCounters(i, netcuts, Reco3B_Back_Et, N_Reco3B_Back_EtCut);
 		IncrementEtCounters(i, netcuts, Reco4_Back_Et, N_Reco4_Back_EtCut);
+		IncrementEtCounters(i, netcuts, Reco5_Back_Et, N_Reco5_Back_EtCut);
+		IncrementEtCounters(i, netcuts, Reco6_Back_Et, N_Reco6_Back_EtCut);
 		IncrementEtCounters(i, netcuts, RecoAll_Back_Et, N_RecoAll_Back_EtCut);
     }
 
@@ -518,12 +678,12 @@ void TauEtStudy() {
 
 	// Test various windows to determine smallest that reasonably captures energy
 	// Construct sub-energies for 3x3 layers e.g. 0, 3, and Had
-	Float_t L0_Back_AverageLayerEt = 0, L0_Back_Average1x1Et = 0, L0_Back_Average2x1Et = 0, L0_Back_Average3x1Et = 0;
-	Float_t L3_Back_AverageLayerEt = 0, L3_Back_Average1x1Et = 0, L3_Back_Average2x1Et = 0, L3_Back_Average3x1Et = 0;
-	Float_t Had_Back_AverageLayerEt = 0, Had_Back_Average1x1Et = 0, Had_Back_Average3x1Et = 0;
-	Float_t L0_Sig_AverageLayerEt = 0, L0_Sig_Average1x1Et = 0, L0_Sig_Average2x1Et = 0, L0_Sig_Average3x1Et = 0;
-	Float_t L3_Sig_AverageLayerEt = 0, L3_Sig_Average1x1Et = 0, L3_Sig_Average2x1Et = 0, L3_Sig_Average3x1Et = 0;
-	Float_t Had_Sig_AverageLayerEt = 0, Had_Sig_Average1x1Et = 0, Had_Sig_Average3x1Et = 0;
+	Float_t L0_Back_AverageLayerEt = 0, L0_Back_Average1x1Et = 0, L0_Back_Average1x2Et = 0, L0_Back_Average1x3Et = 0;
+	Float_t L3_Back_AverageLayerEt = 0, L3_Back_Average1x1Et = 0, L3_Back_Average1x2Et = 0, L3_Back_Average1x3Et = 0;
+	Float_t Had_Back_AverageLayerEt = 0, Had_Back_Average1x1Et = 0, Had_Back_Average1x2Et = 0, Had_Back_Average1x3Et = 0;
+	Float_t L0_Sig_AverageLayerEt = 0, L0_Sig_Average1x1Et = 0, L0_Sig_Average1x2Et = 0, L0_Sig_Average1x3Et = 0;
+	Float_t L3_Sig_AverageLayerEt = 0, L3_Sig_Average1x1Et = 0, L3_Sig_Average1x2Et = 0, L3_Sig_Average1x3Et = 0;
+	Float_t Had_Sig_AverageLayerEt = 0, Had_Sig_Average1x1Et = 0, Had_Sig_Average1x2Et = 0, Had_Sig_Average1x3Et = 0;
 	// j = eta, k = phi
 	for (Int_t j = 0; j < 3; j++) {
 		for (Int_t k = 0; k < 3; k++) {
@@ -534,12 +694,12 @@ void TauEtStudy() {
 			L3_Sig_AverageLayerEt += L3_AverageFlipCell_Sig_Et[j][k];
 			Had_Sig_AverageLayerEt += Had_AverageFlipCell_Sig_Et[j][k];
 			if (j == 1) {
-				L0_Back_Average3x1Et += L0_AverageFlipCell_Back_Et[j][k];
-				L3_Back_Average3x1Et += L3_AverageFlipCell_Back_Et[j][k];
-				Had_Back_Average3x1Et += Had_AverageFlipCell_Back_Et[j][k];
-				L0_Sig_Average3x1Et += L0_AverageFlipCell_Sig_Et[j][k];
-				L3_Sig_Average3x1Et += L3_AverageFlipCell_Sig_Et[j][k];
-				Had_Sig_Average3x1Et += Had_AverageFlipCell_Sig_Et[j][k];
+				L0_Back_Average1x3Et += L0_AverageFlipCell_Back_Et[j][k];
+				L3_Back_Average1x3Et += L3_AverageFlipCell_Back_Et[j][k];
+				Had_Back_Average1x3Et += Had_AverageFlipCell_Back_Et[j][k];
+				L0_Sig_Average1x3Et += L0_AverageFlipCell_Sig_Et[j][k];
+				L3_Sig_Average1x3Et += L3_AverageFlipCell_Sig_Et[j][k];
+				Had_Sig_Average1x3Et += Had_AverageFlipCell_Sig_Et[j][k];
 			}
 			if (j == 1 && k == 1) {
 				L0_Back_Average1x1Et += L0_AverageFlipCell_Back_Et[j][k];
@@ -550,10 +710,12 @@ void TauEtStudy() {
 				Had_Sig_Average1x1Et += Had_AverageFlipCell_Sig_Et[j][k];
 			}
 			if (j == 1 && k < 2) {
-				L0_Back_Average2x1Et += L0_AverageFlipCell_Back_Et[j][k];
-				L3_Back_Average2x1Et += L3_AverageFlipCell_Back_Et[j][k];
-				L0_Sig_Average2x1Et += L0_AverageFlipCell_Sig_Et[j][k];
-				L3_Sig_Average2x1Et += L3_AverageFlipCell_Sig_Et[j][k];
+				L0_Back_Average1x2Et += L0_AverageFlipCell_Back_Et[j][k];
+				L3_Back_Average1x2Et += L3_AverageFlipCell_Back_Et[j][k];
+				Had_Back_Average1x2Et += Had_AverageFlipCell_Back_Et[j][k];
+				L0_Sig_Average1x2Et += L0_AverageFlipCell_Sig_Et[j][k];
+				L3_Sig_Average1x2Et += L3_AverageFlipCell_Sig_Et[j][k];
+				Had_Sig_Average1x2Et += Had_AverageFlipCell_Sig_Et[j][k];
 			}
 		}
 	}
@@ -620,85 +782,39 @@ void TauEtStudy() {
 	
 	ofstream textfile ("TauEtStudy.txt");
 
+	textfile << "Reco 1 = " + Reco1_DefString << endl;
+	textfile << "Reco 2 = " + Reco2_DefString << endl;
+	textfile << "Reco 3 = " + Reco3_DefString << endl;
+	textfile << "Reco 3A = " + Reco3A_DefString << endl;
+	textfile << "Reco 3B = " + Reco3B_DefString << endl;
+	textfile << "Reco 4 = " + Reco4_DefString << endl;
+	textfile << "Reco 5 = " + Reco5_DefString << endl;
+	textfile << "Reco 6 = " + Reco6_DefString << endl;
+	textfile << "Reco All = " + RecoAll_DefString << endl << endl;
+
 	textfile << "Background Reconstruction Energy Subset Candidates" << endl << endl;
-	textfile << "L0" << endl;
-	textfile << "Total energy: " << L0_Back_AverageLayerEt << endl;
-	textfile << "1x1 energy: " << L0_Back_Average1x1Et << "	Ratio: " << L0_Back_Average1x1Et / L0_Back_AverageLayerEt << endl;
-	textfile << "2x1 energy: " << L0_Back_Average2x1Et << "	Ratio: " << L0_Back_Average2x1Et / L0_Back_AverageLayerEt << endl;
-	textfile << "3x1 energy: " << L0_Back_Average3x1Et << "	Ratio: " << L0_Back_Average3x1Et / L0_Back_AverageLayerEt << endl << endl;
 
-	textfile << "L1" << endl;
-	textfile << "Total energy: " << L1_Back_AverageLayerEt << endl;
-	textfile << "3x3 energy: " << L1_Back_Average3x3Et << "		Ratio: " << L1_Back_Average3x3Et / L1_Back_AverageLayerEt << endl;
-	textfile << "5x3 energy: " << L1_Back_Average5x3Et << "		Ratio: " << L1_Back_Average5x3Et / L1_Back_AverageLayerEt << endl;
-	textfile << "7x3 energy: " << L1_Back_Average7x3Et << "		Ratio: " << L1_Back_Average7x3Et / L1_Back_AverageLayerEt << endl;
-	textfile << "9x3 energy: " << L1_Back_Average9x3Et << "		Ratio: " << L1_Back_Average9x3Et / L1_Back_AverageLayerEt << endl;
-	textfile << "11x3 energy: " << L1_Back_Average11x3Et << "		Ratio: " << L1_Back_Average11x3Et / L1_Back_AverageLayerEt << endl << endl;
-
-	textfile << "L2" << endl;
-	textfile << "Total energy: " << L2_Back_AverageLayerEt << endl;
-	textfile << "3x3 energy: " << L2_Back_Average3x3Et << "		Ratio: " << L2_Back_Average3x3Et / L2_Back_AverageLayerEt << endl;
-	textfile << "5x3 energy: " << L2_Back_Average5x3Et << "		Ratio: " << L2_Back_Average5x3Et / L2_Back_AverageLayerEt << endl;
-	textfile << "7x3 energy: " << L2_Back_Average7x3Et << "		Ratio: " << L2_Back_Average7x3Et / L2_Back_AverageLayerEt << endl;
-	textfile << "9x3 energy: " << L2_Back_Average9x3Et << "		Ratio: " << L2_Back_Average9x3Et / L2_Back_AverageLayerEt << endl;
-	textfile << "11x3 energy: " << L2_Back_Average11x3Et << "		Ratio: " << L2_Back_Average11x3Et / L2_Back_AverageLayerEt << endl << endl;
-
-	textfile << "L3" << endl;
-	textfile << "Total energy: " << L3_Back_AverageLayerEt << endl;
-	textfile << "1x1 energy: " << L3_Back_Average1x1Et << "	Ratio: " << L3_Back_Average1x1Et / L3_Back_AverageLayerEt << endl;
-	textfile << "2x1 energy: " << L3_Back_Average2x1Et << "	Ratio: " << L3_Back_Average2x1Et / L3_Back_AverageLayerEt << endl;
-	textfile << "3x1 energy: " << L3_Back_Average3x1Et << "	Ratio: " << L3_Back_Average3x1Et / L3_Back_AverageLayerEt << endl << endl;
-
-	textfile << "Had" << endl;
-	textfile << "Total energy: " << Had_Back_AverageLayerEt << endl;
-	textfile << "1x1 energy: " << Had_Back_Average1x1Et << "	Ratio: " << Had_Back_Average1x1Et / Had_Back_AverageLayerEt << endl;
-	textfile << "3x1 energy: " << Had_Back_Average3x1Et << "	Ratio: " << Had_Back_Average3x1Et / Had_Back_AverageLayerEt << endl << endl;
-
-	textfile << "Reco 1 = (1x1, 5x3, 5x3, 3x3, 3x3)" << endl;
-	textfile << "Reco 2 = (3x3, 7x3, 5x3, 3x3, 3x3)" << endl;
-	textfile << "Reco 3 = (2x1, 5x2, 5x2, 2x1, 3x3)" << endl;
-	textfile << "Reco All = (3x3, 13x3, 13x3, 3x3, 3x3)" << endl << endl;
+	OutputText3x3EtSubsets(textfile, "L0", L0_Back_AverageLayerEt, L0_Back_Average1x1Et, L0_Back_Average1x2Et, L0_Back_Average1x3Et);
+	OutputText13x3EtSubsets(textfile, "L1", L1_Back_AverageLayerEt, L1_Back_Average3x3Et, L1_Back_Average5x3Et, L1_Back_Average7x3Et,
+		L1_Back_Average9x3Et, L1_Back_Average11x3Et);
+	OutputText13x3EtSubsets(textfile, "L2", L2_Back_AverageLayerEt, L2_Back_Average3x3Et, L2_Back_Average5x3Et, L2_Back_Average7x3Et,
+		L2_Back_Average9x3Et, L2_Back_Average11x3Et);
+	OutputText3x3EtSubsets(textfile, "L3", L3_Back_AverageLayerEt, L3_Back_Average1x1Et, L3_Back_Average1x2Et, L3_Back_Average1x3Et);
+	OutputText3x3EtSubsets(textfile, "Had", Had_Back_AverageLayerEt, Had_Back_Average1x1Et, Had_Back_Average1x2Et, Had_Back_Average1x3Et);
 
 	textfile << "Signal Reconstruction Energy Subset Candidates" << endl << endl;
-	textfile << "L0" << endl;
-	textfile << "Total energy: " << L0_Sig_AverageLayerEt << endl;
-	textfile << "1x1 energy: " << L0_Sig_Average1x1Et << "	Ratio: " << L0_Sig_Average1x1Et / L0_Sig_AverageLayerEt << endl;
-	textfile << "2x1 energy: " << L0_Sig_Average2x1Et << "	Ratio: " << L0_Sig_Average2x1Et / L0_Sig_AverageLayerEt << endl;
-	textfile << "3x1 energy: " << L0_Sig_Average3x1Et << "	Ratio: " << L0_Sig_Average3x1Et / L0_Sig_AverageLayerEt << endl << endl;
 
-	textfile << "L1" << endl;
-	textfile << "Total energy: " << L1_Sig_AverageLayerEt << endl;
-	textfile << "3x3 energy: " << L1_Sig_Average3x3Et << "		Ratio: " << L1_Sig_Average3x3Et / L1_Sig_AverageLayerEt << endl;
-	textfile << "5x3 energy: " << L1_Sig_Average5x3Et << "		Ratio: " << L1_Sig_Average5x3Et / L1_Sig_AverageLayerEt << endl;
-	textfile << "7x3 energy: " << L1_Sig_Average7x3Et << "		Ratio: " << L1_Sig_Average7x3Et / L1_Sig_AverageLayerEt << endl;
-	textfile << "9x3 energy: " << L1_Sig_Average9x3Et << "		Ratio: " << L1_Sig_Average9x3Et / L1_Sig_AverageLayerEt << endl;
-	textfile << "11x3 energy: " << L1_Sig_Average11x3Et << "		Ratio: " << L1_Sig_Average11x3Et / L1_Sig_AverageLayerEt << endl << endl;
+	OutputText3x3EtSubsets(textfile, "L0", L0_Sig_AverageLayerEt, L0_Sig_Average1x1Et, L0_Sig_Average1x2Et, L0_Sig_Average1x3Et);
+	OutputText13x3EtSubsets(textfile, "L1", L1_Sig_AverageLayerEt, L1_Sig_Average3x3Et, L1_Sig_Average5x3Et, L1_Sig_Average7x3Et,
+		L1_Sig_Average9x3Et, L1_Sig_Average11x3Et);
+	OutputText13x3EtSubsets(textfile, "L2", L2_Sig_AverageLayerEt, L2_Sig_Average3x3Et, L2_Sig_Average5x3Et, L2_Sig_Average7x3Et,
+		L2_Sig_Average9x3Et, L2_Sig_Average11x3Et);
+	OutputText3x3EtSubsets(textfile, "L3", L3_Sig_AverageLayerEt, L3_Sig_Average1x1Et, L3_Sig_Average1x2Et, L3_Sig_Average1x3Et);
+	OutputText3x3EtSubsets(textfile, "Had", Had_Sig_AverageLayerEt, Had_Sig_Average1x1Et, Had_Sig_Average1x2Et, Had_Sig_Average1x3Et);
 
-	textfile << "L2" << endl;
-	textfile << "Total energy: " << L2_Sig_AverageLayerEt << endl;
-	textfile << "3x3 energy: " << L2_Sig_Average3x3Et << "		Ratio: " << L2_Sig_Average3x3Et / L2_Sig_AverageLayerEt << endl;
-	textfile << "5x3 energy: " << L2_Sig_Average5x3Et << "		Ratio: " << L2_Sig_Average5x3Et / L2_Sig_AverageLayerEt << endl;
-	textfile << "7x3 energy: " << L2_Sig_Average7x3Et << "		Ratio: " << L2_Sig_Average7x3Et / L2_Sig_AverageLayerEt << endl;
-	textfile << "9x3 energy: " << L2_Sig_Average9x3Et << "		Ratio: " << L2_Sig_Average9x3Et / L2_Sig_AverageLayerEt << endl;
-	textfile << "11x3 energy: " << L2_Sig_Average11x3Et << "		Ratio: " << L2_Sig_Average11x3Et / L2_Sig_AverageLayerEt << endl << endl;
+	textfile << endl << endl;
 
-	textfile << "L3" << endl;
-	textfile << "Total energy: " << L3_Sig_AverageLayerEt << endl;
-	textfile << "1x1 energy: " << L3_Sig_Average1x1Et << "	Ratio: " << L3_Sig_Average1x1Et / L3_Sig_AverageLayerEt << endl;
-	textfile << "2x1 energy: " << L3_Sig_Average2x1Et << "	Ratio: " << L3_Sig_Average2x1Et / L3_Sig_AverageLayerEt << endl;
-	textfile << "3x1 energy: " << L3_Sig_Average3x1Et << "	Ratio: " << L3_Sig_Average3x1Et / L3_Sig_AverageLayerEt << endl << endl;
-
-	textfile << "Had" << endl;
-	textfile << "Total energy: " << Had_Sig_AverageLayerEt << endl;
-	textfile << "1x1 energy: " << Had_Sig_Average1x1Et << "	Ratio: " << Had_Sig_Average1x1Et / Had_Sig_AverageLayerEt << endl;
-	textfile << "3x1 energy: " << Had_Sig_Average3x1Et << "	Ratio: " << Had_Sig_Average3x1Et / Had_Sig_AverageLayerEt << endl << endl;
-
-	textfile << "Reco 1 = (1x1, 5x3, 5x3, 3x3, 3x3)" << endl;
-	textfile << "Reco 2 = (3x3, 7x3, 5x3, 3x3, 3x3)" << endl;
-	textfile << "Reco 3 = (2x1, 5x2, 5x2, 2x1, 3x3)" << endl;
-	textfile << "Reco All = (3x3, 13x3, 13x3, 3x3, 3x3)" << endl << endl << endl;
-
-	// Break 2-D array into 3 1-D array to feed into Graph2D
+	// Break 2-D array into 3 1-D arrays to feed into Graph2D
 	Int_t ncolumns_13x3 = 39;
 	Int_t ncolumns_3x3 = 9;
 	Float_t Eta_13x3[ncolumns_13x3];
@@ -725,7 +841,7 @@ void TauEtStudy() {
 	Float_t L3_AverageFlipCell_Sig_Et_Z[ncolumns_3x3];
 	Float_t Had_AverageCell_Sig_Et_Z[ncolumns_3x3];
 	Float_t Had_AverageFlipCell_Sig_Et_Z[ncolumns_3x3];
-	for (Int_t i = 0; i<ncolumns_13x3; i++) {
+	for (Int_t i = 0; i < ncolumns_13x3; i++) {
 		Int_t eta = float(i % 13);
 		Int_t phi = float(int(i / 13));
 		Eta_13x3[i] = eta;
@@ -779,9 +895,21 @@ void TauEtStudy() {
 	Float_t Reco3_SigBackEtRatio[netcuts];
 	Float_t Reco3_SigEtCutEfficiency[netcuts];
 	Float_t Reco3_BackEtCutEfficiency[netcuts];
+	Float_t Reco3A_SigBackEtRatio[netcuts];
+	Float_t Reco3A_SigEtCutEfficiency[netcuts];
+	Float_t Reco3A_BackEtCutEfficiency[netcuts];
+	Float_t Reco3B_SigBackEtRatio[netcuts];
+	Float_t Reco3B_SigEtCutEfficiency[netcuts];
+	Float_t Reco3B_BackEtCutEfficiency[netcuts];
 	Float_t Reco4_SigBackEtRatio[netcuts];
 	Float_t Reco4_SigEtCutEfficiency[netcuts];
 	Float_t Reco4_BackEtCutEfficiency[netcuts];
+	Float_t Reco5_SigBackEtRatio[netcuts];
+	Float_t Reco5_SigEtCutEfficiency[netcuts];
+	Float_t Reco5_BackEtCutEfficiency[netcuts];
+	Float_t Reco6_SigBackEtRatio[netcuts];
+	Float_t Reco6_SigEtCutEfficiency[netcuts];
+	Float_t Reco6_BackEtCutEfficiency[netcuts];
 	Float_t RecoAll_SigBackEtRatio[netcuts];
 	Float_t RecoAll_SigEtCutEfficiency[netcuts];
 	Float_t RecoAll_BackEtCutEfficiency[netcuts];
@@ -792,6 +920,8 @@ void TauEtStudy() {
 		Reco2_SigBackEtRatio[i] = RecoEtRatio(N_Reco2_Sig_EtCut[i], N_Reco2_Back_EtCut[i]);
 		Reco3_SigBackEtRatio[i] = RecoEtRatio(N_Reco3_Sig_EtCut[i], N_Reco3_Back_EtCut[i]);
 		Reco4_SigBackEtRatio[i] = RecoEtRatio(N_Reco4_Sig_EtCut[i], N_Reco4_Back_EtCut[i]);
+		Reco5_SigBackEtRatio[i] = RecoEtRatio(N_Reco5_Sig_EtCut[i], N_Reco5_Back_EtCut[i]);
+		Reco6_SigBackEtRatio[i] = RecoEtRatio(N_Reco6_Sig_EtCut[i], N_Reco6_Back_EtCut[i]);
 		RecoAll_SigBackEtRatio[i] = RecoEtRatio(N_RecoAll_Sig_EtCut[i], N_RecoAll_Back_EtCut[i]);
 
 		RecoCutEfficiencies(Reco1_SigEtCutEfficiency[i], Reco1_BackEtCutEfficiency[i], N_Reco1_Sig_EtCut[i], N_Reco1_Sig_EtCut[0],
@@ -800,12 +930,21 @@ void TauEtStudy() {
 			N_Reco2_Back_EtCut[i], N_Reco2_Back_EtCut[0]);
 		RecoCutEfficiencies(Reco3_SigEtCutEfficiency[i], Reco3_BackEtCutEfficiency[i], N_Reco3_Sig_EtCut[i], N_Reco3_Sig_EtCut[0],
 			N_Reco3_Back_EtCut[i], N_Reco3_Back_EtCut[0]);
+		RecoCutEfficiencies(Reco3A_SigEtCutEfficiency[i], Reco3A_BackEtCutEfficiency[i], N_Reco3A_Sig_EtCut[i], N_Reco3A_Sig_EtCut[0],
+			N_Reco3A_Back_EtCut[i], N_Reco3A_Back_EtCut[0]);
+		RecoCutEfficiencies(Reco3B_SigEtCutEfficiency[i], Reco3B_BackEtCutEfficiency[i], N_Reco3B_Sig_EtCut[i], N_Reco3B_Sig_EtCut[0],
+			N_Reco3B_Back_EtCut[i], N_Reco3B_Back_EtCut[0]);
 		RecoCutEfficiencies(Reco4_SigEtCutEfficiency[i], Reco4_BackEtCutEfficiency[i], N_Reco4_Sig_EtCut[i], N_Reco4_Sig_EtCut[0],
 			N_Reco4_Back_EtCut[i], N_Reco4_Back_EtCut[0]);
+		RecoCutEfficiencies(Reco5_SigEtCutEfficiency[i], Reco5_BackEtCutEfficiency[i], N_Reco5_Sig_EtCut[i], N_Reco5_Sig_EtCut[0],
+			N_Reco5_Back_EtCut[i], N_Reco5_Back_EtCut[0]);
+		RecoCutEfficiencies(Reco6_SigEtCutEfficiency[i], Reco6_BackEtCutEfficiency[i], N_Reco6_Sig_EtCut[i], N_Reco6_Sig_EtCut[0],
+			N_Reco6_Back_EtCut[i], N_Reco6_Back_EtCut[0]);
 		RecoCutEfficiencies(RecoAll_SigEtCutEfficiency[i], RecoAll_BackEtCutEfficiency[i], N_RecoAll_Sig_EtCut[i], N_RecoAll_Sig_EtCut[0],
 			N_RecoAll_Back_EtCut[i], N_RecoAll_Back_EtCut[0]);
 		}
 
+	// Comparison of peak energy to off-peak energy here
 	textfile << "L2 Phi Peripheral Energy - Flipped and Unflipped" << endl << endl;
 	textfile << "Background" << endl;
 	textfile << "Unflipped [6][0]:" << endl;
@@ -843,11 +982,29 @@ void TauEtStudy() {
 	textfile << "L2 Main Peak Et: " << L2_Sig_MainPeakEt << endl;
 	textfile << "L2 Off/Main Ratio: " << L2_Sig_OffPeakEt / L2_Sig_MainPeakEt << endl << endl << endl;
 
+	// Output number of events after various Et cuts
 	OutputEventsAfterCutsInfo(textfile, "1", N_Reco1_Back_EtCut, N_Reco1_Sig_EtCut);
 	OutputEventsAfterCutsInfo(textfile, "2", N_Reco2_Back_EtCut, N_Reco2_Sig_EtCut);
 	OutputEventsAfterCutsInfo(textfile, "3", N_Reco3_Back_EtCut, N_Reco3_Sig_EtCut);
+	OutputEventsAfterCutsInfo(textfile, "3", N_Reco3A_Back_EtCut, N_Reco3A_Sig_EtCut);
+	OutputEventsAfterCutsInfo(textfile, "3", N_Reco3B_Back_EtCut, N_Reco3B_Sig_EtCut);
 	OutputEventsAfterCutsInfo(textfile, "4", N_Reco4_Back_EtCut, N_Reco4_Sig_EtCut);
+	OutputEventsAfterCutsInfo(textfile, "5", N_Reco5_Back_EtCut, N_Reco5_Sig_EtCut);
+	OutputEventsAfterCutsInfo(textfile, "6", N_Reco6_Back_EtCut, N_Reco6_Sig_EtCut);
 	OutputEventsAfterCutsInfo(textfile, "All", N_RecoAll_Back_EtCut, N_RecoAll_Sig_EtCut);
+
+	// Output info on cuts that result in 90% signal efficiency
+	textfile << "90% Signal Efficiency Cuts" << endl << endl;
+	Output90PercentSignalInfo(textfile, "Reco 1 " + Reco1_DefString, netcuts, Reco1_SigEtCutEfficiency, Reco1_BackEtCutEfficiency);
+	Output90PercentSignalInfo(textfile, "Reco 2 " + Reco2_DefString, netcuts, Reco2_SigEtCutEfficiency, Reco2_BackEtCutEfficiency);
+	Output90PercentSignalInfo(textfile, "Reco 3 " + Reco3_DefString, netcuts, Reco3_SigEtCutEfficiency, Reco3_BackEtCutEfficiency);
+	Output90PercentSignalInfo(textfile, "Reco 3A " + Reco3A_DefString, netcuts, Reco3A_SigEtCutEfficiency, Reco3A_BackEtCutEfficiency);
+	Output90PercentSignalInfo(textfile, "Reco 3B " + Reco3B_DefString, netcuts, Reco3B_SigEtCutEfficiency, Reco3B_BackEtCutEfficiency);
+	Output90PercentSignalInfo(textfile, "Reco 4 " + Reco4_DefString, netcuts, Reco4_SigEtCutEfficiency, Reco4_BackEtCutEfficiency);
+	Output90PercentSignalInfo(textfile, "Reco 5 " + Reco5_DefString, netcuts, Reco5_SigEtCutEfficiency, Reco5_BackEtCutEfficiency);
+	Output90PercentSignalInfo(textfile, "Reco 6 " + Reco6_DefString, netcuts, Reco6_SigEtCutEfficiency, Reco6_BackEtCutEfficiency);
+	Output90PercentSignalInfo(textfile, "Reco All " + RecoAll_DefString, netcuts, RecoAll_SigEtCutEfficiency, RecoAll_BackEtCutEfficiency);
+
 
 	textfile.close();
 
@@ -1069,6 +1226,22 @@ void TauEtStudy() {
 	groc3->GetXaxis()->SetLimits(0, 0.2);
 	groc3->GetYaxis()->SetTitle("Signal Efficiency");
 
+	// Reco 3A ROC curve
+	TGraph *groc3a = new TGraph(netcuts, Reco3A_BackEtCutEfficiency, Reco3A_SigEtCutEfficiency);
+	groc3a->SetName("reco_3A_roc");
+	groc3a->SetTitle("Reco 3A ROC");
+	groc3a->GetXaxis()->SetTitle("Background Efficiency");
+	groc3a->GetXaxis()->SetLimits(0, 0.2);
+	groc3a->GetYaxis()->SetTitle("Signal Efficiency");
+
+	// Reco 3B ROC curve
+	TGraph *groc3b = new TGraph(netcuts, Reco3B_BackEtCutEfficiency, Reco3B_SigEtCutEfficiency);
+	groc3b->SetName("reco_3B_roc");
+	groc3b->SetTitle("Reco 3B ROC");
+	groc3b->GetXaxis()->SetTitle("Background Efficiency");
+	groc3b->GetXaxis()->SetLimits(0, 0.2);
+	groc3b->GetYaxis()->SetTitle("Signal Efficiency");
+
 	// Reco 4 ROC curve
 	TGraph *groc4 = new TGraph(netcuts, Reco4_BackEtCutEfficiency, Reco4_SigEtCutEfficiency);
 	groc4->SetName("reco_4_roc");
@@ -1077,6 +1250,22 @@ void TauEtStudy() {
 	groc4->GetXaxis()->SetLimits(0, 0.2);
 	groc4->GetYaxis()->SetTitle("Signal Efficiency");
 
+	// Reco 5 ROC curve
+	TGraph *groc5 = new TGraph(netcuts, Reco5_BackEtCutEfficiency, Reco5_SigEtCutEfficiency);
+	groc5->SetName("reco_5_roc");
+	groc5->SetTitle("Reco 5 ROC");
+	groc5->GetXaxis()->SetTitle("Background Efficiency");
+	groc5->GetXaxis()->SetLimits(0, 0.2);
+	groc5->GetYaxis()->SetTitle("Signal Efficiency");
+
+	// Reco 6 ROC curve
+	TGraph *groc6 = new TGraph(netcuts, Reco6_BackEtCutEfficiency, Reco6_SigEtCutEfficiency);
+	groc6->SetName("reco_6_roc");
+	groc6->SetTitle("Reco 6 ROC");
+	groc6->GetXaxis()->SetTitle("Background Efficiency");
+	groc6->GetXaxis()->SetLimits(0, 0.2);
+	groc6->GetYaxis()->SetTitle("Signal Efficiency");
+
 	// Reco All ROC curve
 	TGraph *grocall = new TGraph(netcuts, RecoAll_BackEtCutEfficiency, RecoAll_SigEtCutEfficiency);
 	grocall->SetName("reco_all_roc");
@@ -1084,6 +1273,10 @@ void TauEtStudy() {
 	grocall->GetXaxis()->SetTitle("Background Efficiency");
 	grocall->GetXaxis()->SetLimits(0, 0.2);
 	grocall->GetYaxis()->SetTitle("Signal Efficiency");
+	
+	// Legend for ROC curve graph
+	TLegend *rocleg = new TLegend(0.6, 0.1, 0.9, 0.4);
+	rocleg->SetHeader("Reco Definition");
 
 	// Histogram of reconstructed signal and background energies
 	TH1F* h1reco1 = new TH1F("reco1sig", "Reco 1 Signal; Et (GeV); Entries", 100, 0., 150.);
@@ -1095,9 +1288,21 @@ void TauEtStudy() {
 	TH1F* h1reco3 = new TH1F("reco3sig", "Reco 3 Signal; Et (GeV); Entries", 100, 0., 150.);
 	TH1F* h2reco3 = new TH1F("reco3back", "Reco 3 Background; Et (GeV); Entries", 100, 0., 150.);
 	TH1F* h3reco3 = new TH1F("reco3 - true", "Reco 3 Signal - True Et; Et (Gev); Entries", 100, -100., 50.);
+	TH1F* h1reco3a = new TH1F("reco3asig", "Reco 3 Signal; Et (GeV); Entries", 100, 0., 150.);
+	TH1F* h2reco3a = new TH1F("reco3aback", "Reco 3 Background; Et (GeV); Entries", 100, 0., 150.);
+	TH1F* h3reco3a = new TH1F("reco3a - true", "Reco 3 Signal - True Et; Et (Gev); Entries", 100, -100., 50.);
+	TH1F* h1reco3b = new TH1F("reco3bsig", "Reco 3 Signal; Et (GeV); Entries", 100, 0., 150.);
+	TH1F* h2reco3b = new TH1F("reco3bback", "Reco 3 Background; Et (GeV); Entries", 100, 0., 150.);
+	TH1F* h3reco3b = new TH1F("reco3b - true", "Reco 3 Signal - True Et; Et (Gev); Entries", 100, -100., 50.);
 	TH1F* h1reco4 = new TH1F("reco4sig", "Reco 4 Signal; Et (GeV); Entries", 100, 0., 150.);
 	TH1F* h2reco4 = new TH1F("reco4back", "Reco 4 Background; Et (GeV); Entries", 100, 0., 150.);
 	TH1F* h3reco4 = new TH1F("reco4 - true", "Reco 4 Signal - True Et; Et (Gev); Entries", 100, -100., 50.);
+	TH1F* h1reco5 = new TH1F("reco5sig", "Reco 5 Signal; Et (GeV); Entries", 100, 0., 150.);
+	TH1F* h2reco5 = new TH1F("reco5back", "Reco 5 Background; Et (GeV); Entries", 100, 0., 150.);
+	TH1F* h3reco5 = new TH1F("reco5 - true", "Reco 5 Signal - True Et; Et (Gev); Entries", 100, -100., 50.);
+	TH1F* h1reco6 = new TH1F("reco6sig", "Reco 6 Signal; Et (GeV); Entries", 100, 0., 150.);
+	TH1F* h2reco6 = new TH1F("reco6back", "Reco 6 Background; Et (GeV); Entries", 100, 0., 150.);
+	TH1F* h3reco6 = new TH1F("reco6 - true", "Reco 6 Signal - True Et; Et (Gev); Entries", 100, -100., 50.);
 	TH1F* h1recoall = new TH1F("recoallsig", "Reco All Signal; Et (GeV); Entries", 100, 0., 150.);
 	TH1F* h2recoall = new TH1F("recoallback", "Reco All Background; Et (GeV); Entries", 100, 0., 150.);
 	TH1F* h3recoall = new TH1F("recoall - true", "Reco All Signal - True Et; Et (Gev); Entries", 100, -100., 50.);
@@ -1111,19 +1316,12 @@ void TauEtStudy() {
 	FillRecoHistograms(h1reco1, h2reco1, h3reco1, sigentries, backentries, Reco1_Sig_Et, Reco1_Back_Et, TrueEt);
 	FillRecoHistograms(h1reco2, h2reco2, h3reco2, sigentries, backentries, Reco2_Sig_Et, Reco2_Back_Et, TrueEt);
 	FillRecoHistograms(h1reco3, h2reco3, h3reco3, sigentries, backentries, Reco3_Sig_Et, Reco3_Back_Et, TrueEt);
+	FillRecoHistograms(h1reco3a, h2reco3a, h3reco3a, sigentries, backentries, Reco3A_Sig_Et, Reco3A_Back_Et, TrueEt);
+	FillRecoHistograms(h1reco3b, h2reco3b, h3reco3b, sigentries, backentries, Reco3B_Sig_Et, Reco3B_Back_Et, TrueEt);
 	FillRecoHistograms(h1reco4, h2reco4, h3reco4, sigentries, backentries, Reco4_Sig_Et, Reco4_Back_Et, TrueEt);
+	FillRecoHistograms(h1reco5, h2reco5, h3reco5, sigentries, backentries, Reco5_Sig_Et, Reco5_Back_Et, TrueEt);
+	FillRecoHistograms(h1reco6, h2reco6, h3reco6, sigentries, backentries, Reco6_Sig_Et, Reco6_Back_Et, TrueEt);
 	FillRecoHistograms(h1recoall, h2recoall, h3recoall, sigentries, backentries, RecoAll_Sig_Et, RecoAll_Back_Et, TrueEt);
-
-	//for (Int_t i = 0; i < sigentries; i++) {
-	//	h1->Fill(Reco3_Sig_Et[i]);
-	//	h4->Fill(TrueEt[i]);
-	//	h3->Fill(Reco3_Sig_Et[i] - TrueEt[i]);
-	//}
-	//
-	//for (Int_t i = 0; i < backentries; i++) {
-	//	h2->Fill(Reco3_Back_Et[i]);
-	//}
-
 
     // Define the Canvas
     TCanvas *c1 = new TCanvas("c1", "Graph Draw Options", 200, 10, 600, 400);
@@ -1186,7 +1384,45 @@ void TauEtStudy() {
 	c1->Print("TauEtStudy.pdf");
 	groc4->Draw("ALP");
 	c1->Print("TauEtStudy.pdf");
+	groc5->Draw("ALP");
+	c1->Print("TauEtStudy.pdf");
+	groc6->Draw("ALP");
+	c1->Print("TauEtStudy.pdf");
 	grocall->Draw("ALP");
+	c1->Print("TauEtStudy.pdf");
+
+	groc1->Draw("ALP");
+	groc2->Draw("same");
+	groc2->SetLineColor(kRed);
+	groc3->Draw("same");
+	groc3->SetLineColor(kBlue);
+	groc4->Draw("same");
+	groc4->SetLineColor(kGreen);
+	groc5->Draw("same");
+	groc5->SetLineColor(kYellow);
+	groc6->Draw("same");
+	groc6->SetLineColor(kOrange);
+	grocall->Draw("same");
+	grocall->SetLineColor(kPink);
+	rocleg->AddEntry(groc1, ("Reco 1 "+Reco1_DefString).c_str(), "l");
+	rocleg->AddEntry(groc2, ("Reco 2 "+Reco2_DefString).c_str(), "l");
+	rocleg->AddEntry(groc3, ("Reco 3 "+Reco3_DefString).c_str(), "l");
+	rocleg->AddEntry(groc4, ("Reco 4 "+Reco4_DefString).c_str(), "l");
+	rocleg->AddEntry(groc5, ("Reco 5 "+Reco5_DefString).c_str(), "l");
+	rocleg->AddEntry(groc6, ("Reco 6 "+Reco6_DefString).c_str(), "l");
+	rocleg->AddEntry(grocall, ("Reco All "+RecoAll_DefString).c_str(), "l");
+	rocleg->Draw("same");
+	c1->Print("TauEtStudy.pdf");
+
+	groc3->Draw("ALP");
+	groc3a->Draw("same");
+	groc3a->SetLineColor(kRed);
+	groc3b->Draw("same");
+	groc3b->SetLineColor(kBlue);
+	rocleg->Clear();
+	rocleg->AddEntry(groc3, ("Reco 3 " + Reco3_DefString).c_str(), "l");
+	rocleg->AddEntry(groc3a, ("Reco 3A " + Reco3A_DefString).c_str(), "l");
+	rocleg->AddEntry(groc3b, ("Reco 3B " + Reco3B_DefString).c_str(), "l");
 	c1->Print("TauEtStudy.pdf");
 
 	h1reco3->Draw();
@@ -1218,18 +1454,25 @@ void TauEtStudy() {
 	h2reco3->SetLineColor(kBlue);
 	c1->Print("TauEtStudy.pdf");
 
-	h1reco3->Draw();
-	h1reco3->SetLineColor(kRed);
-	h1reco3->SetTitle("Reco 3 Signal + Background");
-	h2reco3->Draw("same");
-	h2reco3->SetLineColor(kBlue);
-	c1->Print("TauEtStudy.pdf");
-
 	h1reco4->Draw();
 	h1reco4->SetLineColor(kRed);
 	h1reco4->SetTitle("Reco 4 Signal + Background");
 	h2reco4->Draw("same");
 	h2reco4->SetLineColor(kBlue);
+	c1->Print("TauEtStudy.pdf");
+
+	h1reco5->Draw();
+	h1reco5->SetLineColor(kRed);
+	h1reco5->SetTitle("Reco 5 Signal + Background");
+	h2reco5->Draw("same");
+	h2reco5->SetLineColor(kBlue);
+	c1->Print("TauEtStudy.pdf");
+
+	h1reco6->Draw();
+	h1reco6->SetLineColor(kRed);
+	h1reco6->SetTitle("Reco 6 Signal + Background");
+	h2reco6->Draw("same");
+	h2reco6->SetLineColor(kBlue);
 	c1->Print("TauEtStudy.pdf");
 
 	h1recoall->Draw();
@@ -1239,8 +1482,22 @@ void TauEtStudy() {
 	h2recoall->SetLineColor(kBlue);
 	c1->Print("TauEtStudy.pdf");
 
+	h3reco1->Draw();
+	c1->Print("TauEtStudy.pdf");
+	h3reco2->Draw();
+	c1->Print("TauEtStudy.pdf");
 	h3reco3->Draw();
 	c1->Print("TauEtStudy.pdf");
+	h3reco4->Draw();
+	c1->Print("TauEtStudy.pdf");
+	h3reco5->Draw();
+	c1->Print("TauEtStudy.pdf");
+	h3reco6->Draw();
+	c1->Print("TauEtStudy.pdf");
+	h3recoall->Draw();
+	c1->Print("TauEtStudy.pdf");
+
+
 
 	htrue->Draw();
 	c1->Print("TauEtStudy.pdf)");
