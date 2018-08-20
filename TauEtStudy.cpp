@@ -156,8 +156,8 @@ void TauEtStudy() {
 		Reco6_Sig_Et[i] = 0;
 		RecoAll_Sig_Et[i] = 0;
 
-		TrueEt[i] = mctau->Et() / 1000.;
-		if (TrueEt[i] < 20.) continue;
+		//TrueEt[i] = mctau->Et() / 1000.;
+		//if (TrueEt[i] < 20.) continue;
 
 		// Set flag for preprocessing if necessary by considering sum of off-center phi cells for all layers
 		Int_t SigFlip = 0;
@@ -525,7 +525,7 @@ void TauEtStudy() {
 		}
 	}
 
-	ofstream textfile ("TauEtStudyWith20GeVEtCutAll.txt");
+	ofstream textfile ("TauEtStudy.txt");
 
 	textfile << "Reco 1 = " + Reco1_DefString << endl;
 	textfile << "Reco 2 = " + Reco2_DefString << endl;
@@ -660,7 +660,6 @@ void TauEtStudy() {
 	Float_t RecoAll_BackEtCutEfficiency[netcuts];
 	for (Int_t i = 0; i < netcuts; i++) {
 		NetCutsX[i] = i;
-		// Avoid dividing by zero by setting denominator to 1 if would be 0
 		Reco1_SigBackEtRatio[i] = RecoEtRatio(N_Reco1_Sig_EtCut[i], N_Reco1_Back_EtCut[i]);
 		Reco2_SigBackEtRatio[i] = RecoEtRatio(N_Reco2_Sig_EtCut[i], N_Reco2_Back_EtCut[i]);
 		Reco3_SigBackEtRatio[i] = RecoEtRatio(N_Reco3_Sig_EtCut[i], N_Reco3_Back_EtCut[i]);
@@ -966,7 +965,7 @@ void TauEtStudy() {
 	groc1->SetName("reco_1_roc");
 	groc1->SetTitle("Reco 1 ROC");
 	groc1->GetXaxis()->SetTitle("Background Efficiency");
-	//groc1->GetXaxis()->SetLimits(0, 0.2);
+	groc1->GetXaxis()->SetLimits(0, 0.2);
 	groc1->GetYaxis()->SetTitle("Signal Efficiency");
 
 	// Reco 2 ROC curve
@@ -1069,9 +1068,9 @@ void TauEtStudy() {
 
 	// Fill histograms
 	for (Int_t i = 0; i < sigentries; i++) {
-		if (TrueEt[i] > 20.) {
-			htrue->Fill(TrueEt[i]);
-		}
+		//if (TrueEt[i] > 20.) {
+		htrue->Fill(TrueEt[i]);
+		//}
 	}
 
 	FillRecoHistograms(h1reco1, h2reco1, h3reco1, sigentries, backentries, Reco1_Sig_Et, Reco1_Back_Et, TrueEt);
@@ -1088,7 +1087,7 @@ void TauEtStudy() {
     TCanvas *c1 = new TCanvas("c1", "Graph Draw Options", 200, 10, 600, 400);
 
 	// And write out to a file
-	const char *pdfname = "TauEtStudyWith20GeVEtCutAll.pdf";
+	const char *pdfname = "TauEtStudy.pdf";
 	string pdfstring = pdfname;
 
 	
@@ -1096,7 +1095,6 @@ void TauEtStudy() {
 	grb0->Draw();
 	c1->Print((pdfstring+"(").c_str());
 
-	/*
 	grb1->Draw("P0");
 	c1->Print(pdfname);
 	grb2->Draw("P0");
@@ -1158,8 +1156,6 @@ void TauEtStudy() {
 	grocall->Draw("ALP");
 	c1->Print(pdfname);
 
-	*/
-
 	groc1->Draw("ALP");
 	groc1->SetTitle("Reco ROCs");
 	groc2->Draw("same");
@@ -1183,9 +1179,7 @@ void TauEtStudy() {
 	rocleg->AddEntry(grocall, ("Reco All "+RecoAll_DefString).c_str(), "l");
 	rocleg->Draw("same");
 	c1->Print(pdfname);
-
-	/*
-
+	
 	groc3->Draw("ALP");
 	groc3a->Draw("same");
 	groc3a->SetLineColor(kRed);
@@ -1270,8 +1264,6 @@ void TauEtStudy() {
 	c1->Print(pdfname);
 	h3recoall->Draw();
 	c1->Print(pdfname);
-
-	*/
 
 	htrue->Draw();
 	c1->Print((pdfstring + ")").c_str());

@@ -79,8 +79,34 @@ void Add13x3AverageFlipCellContribution(Int_t eta, Int_t phi, Int_t FlipEt, Floa
 	}
 }
 
+void GetEtaBounds(Int_t& LowerBound, Int_t& UpperBound, Int_t EtaDef, Int_t LayerNumber) {
+	if (EtaDef == 0) {
+		LowerBound = -1;
+		UpperBound = -1;
+		return;
+	}
+	Int_t EtaOffsetFromCenter = (EtaDef - 1) / 2;
+	if (LayerNumber == 0 || LayerNumber == 3 || LayerNumber == 4) {
+		LowerBound = 1 - EtaOffsetFromCenter;
+		UpperBound = 1 + EtaOffsetFromCenter;
+	}
+	else if (LayerNumber == 1 || LayerNumber == 2) {
+		LowerBound = 6 - EtaOffsetFromCenter;
+		UpperBound = 6 + EtaOffsetFromCenter;
+	}
+}
+
+// Add energies of current cells to the reconstruction energy with a given definition
+void AddRecoContribution(Int_t entry, Int_t eta, Int_t phi, Float_t Reco_Et[], Int_t RecoDef[10], Float_t L0_Reco_Et_Holder, Float_t L1_Reco_Et_Holder,
+	Float_t L2_Reco_Et_Holder, Float_t L3_Reco_Et_Holder, Float_t Had_Reco_Et_Holder) {
+	Int_t L0_LowerBound = 0; Int_t L0_UpperBound = 0; Int_t L1_LowerBound = 0; Int_t L1_UpperBound = 0; Int_t L2_LowerBound = 0; Int_t L2_UpperBound = 0;
+		Int_t L3_LowerBound = 0; Int_t L3_UpperBound = 0; Int_t Had_LowerBound = 0; Int_t Had_UpperBound = 0;
+	// Add L0 piece
+
+}
+
 // Add energies of current cells to the reconstruction energy with definition 1 (1x1, 5x3, 5x3, 3x3, 3x3)
-void AddReco1Contribution(Int_t entry, Int_t eta, Int_t phi, Int_t numberofentries, Float_t Reco1_Et[], Float_t L0_Reco_Et_Holder,
+void AddReco1Contribution(Int_t entry, Int_t eta, Int_t phi, Float_t Reco1_Et[], Float_t L0_Reco_Et_Holder,
 	Float_t L1_Reco_Et_Holder, Float_t L2_Reco_Et_Holder, Float_t L3_Reco_Et_Holder, Float_t Had_Reco_Et_Holder) {
 	if (eta < 3 && phi < 3) {
 		Reco1_Et[entry] += L3_Reco_Et_Holder;
@@ -96,7 +122,7 @@ void AddReco1Contribution(Int_t entry, Int_t eta, Int_t phi, Int_t numberofentri
 }
 
 // Add energies of current cells to the reconstruction energy with definition 2 (3x3, 7x3, 5x3, 3x3, 3x3)
-void AddReco2Contribution(Int_t entry, Int_t eta, Int_t phi, Int_t numberofentries, Float_t Reco2_Et[], Float_t L0_Reco_Et_Holder,
+void AddReco2Contribution(Int_t entry, Int_t eta, Int_t phi, Float_t Reco2_Et[], Float_t L0_Reco_Et_Holder,
 	Float_t L1_Reco_Et_Holder, Float_t L2_Reco_Et_Holder, Float_t L3_Reco_Et_Holder, Float_t Had_Reco_Et_Holder) {
 	if (eta < 3) {
 		Reco2_Et[entry] += L0_Reco_Et_Holder;
@@ -112,7 +138,7 @@ void AddReco2Contribution(Int_t entry, Int_t eta, Int_t phi, Int_t numberofentri
 }
 
 // Add energies of current cells to the reconstruction energy with definition 3 (1x2, 5x2, 5x2, 1x2, 3x3)
-void AddReco3Contribution(Int_t entry, Int_t eta, Int_t phi, Int_t numberofentries, Float_t Reco3_Et[], Float_t L0_Reco_Et_Holder, 
+void AddReco3Contribution(Int_t entry, Int_t eta, Int_t phi, Float_t Reco3_Et[], Float_t L0_Reco_Et_Holder, 
 	Float_t L1_Reco_Et_Holder, Float_t L2_Reco_Et_Holder, Float_t L3_Reco_Et_Holder, Float_t Had_Reco_Et_Holder) {
 	if (eta < 3 && phi < 3) {
 		Reco3_Et[entry] += Had_Reco_Et_Holder;
@@ -128,7 +154,7 @@ void AddReco3Contribution(Int_t entry, Int_t eta, Int_t phi, Int_t numberofentri
 }
 
 // Add energies of current cells to the reconstruction energy with definition 3 (1x3, 5x3, 5x3, 1x3, 3x3)
-void AddReco3AContribution(Int_t entry, Int_t eta, Int_t phi, Int_t numberofentries, Float_t Reco3A_Et[], Float_t L0_Reco_Et_Holder,
+void AddReco3AContribution(Int_t entry, Int_t eta, Int_t phi, Float_t Reco3A_Et[], Float_t L0_Reco_Et_Holder,
 	Float_t L1_Reco_Et_Holder, Float_t L2_Reco_Et_Holder, Float_t L3_Reco_Et_Holder, Float_t Had_Reco_Et_Holder) {
 	if (eta < 3) {
 		Reco3A_Et[entry] += Had_Reco_Et_Holder;
@@ -144,7 +170,7 @@ void AddReco3AContribution(Int_t entry, Int_t eta, Int_t phi, Int_t numberofentr
 }
 
 // Add energies of current cells to the reconstruction energy with definition 4 (1x2, 5x2, 5x2, 1x2, None)
-void AddReco4Contribution(Int_t entry, Int_t eta, Int_t phi, Int_t numberofentries, Float_t Reco4_Et[], Float_t L0_Reco_Et_Holder,
+void AddReco4Contribution(Int_t entry, Int_t eta, Int_t phi, Float_t Reco4_Et[], Float_t L0_Reco_Et_Holder,
 	Float_t L1_Reco_Et_Holder, Float_t L2_Reco_Et_Holder, Float_t L3_Reco_Et_Holder, Float_t Had_Reco_Et_Holder) {
 	if (eta == 1 && phi < 2) {
 		Reco4_Et[entry] += L0_Reco_Et_Holder;
@@ -157,7 +183,7 @@ void AddReco4Contribution(Int_t entry, Int_t eta, Int_t phi, Int_t numberofentri
 }
 
 // Add energies of current cells to the reconstruction energy with definition 5 (1x2, 5x2, 5x2, None, None)
-void AddReco5Contribution(Int_t entry, Int_t eta, Int_t phi, Int_t numberofentries, Float_t Reco5_Et[], Float_t L0_Reco_Et_Holder,
+void AddReco5Contribution(Int_t entry, Int_t eta, Int_t phi, Float_t Reco5_Et[], Float_t L0_Reco_Et_Holder,
 	Float_t L1_Reco_Et_Holder, Float_t L2_Reco_Et_Holder, Float_t L3_Reco_Et_Holder, Float_t Had_Reco_Et_Holder) {
 	if (eta == 1 && phi < 2) {
 		Reco5_Et[entry] += L0_Reco_Et_Holder;
@@ -169,7 +195,7 @@ void AddReco5Contribution(Int_t entry, Int_t eta, Int_t phi, Int_t numberofentri
 }
 
 // Add energies of current cells to the reconstruction energy with definition 6 (None, 5x2, 5x2, None, None)
-void AddReco6Contribution(Int_t entry, Int_t eta, Int_t phi, Int_t numberofentries, Float_t Reco6_Et[], Float_t L0_Reco_Et_Holder,
+void AddReco6Contribution(Int_t entry, Int_t eta, Int_t phi, Float_t Reco6_Et[], Float_t L0_Reco_Et_Holder,
 	Float_t L1_Reco_Et_Holder, Float_t L2_Reco_Et_Holder, Float_t L3_Reco_Et_Holder, Float_t Had_Reco_Et_Holder) {
 	if (eta > 3 && eta < 9 && phi < 2) {
 		Reco6_Et[entry] += L1_Reco_Et_Holder;
@@ -178,7 +204,7 @@ void AddReco6Contribution(Int_t entry, Int_t eta, Int_t phi, Int_t numberofentri
 }
 
 // Add energies of current cells to the reconstruction energy with all avaiable cells (3x3, 13x3, 13x3, 3x3, 3x3)
-void AddRecoAllContribution(Int_t entry, Int_t eta, Int_t phi, Int_t numberofentries, Float_t RecoAll_Et[], Float_t L0_Reco_Et_Holder,
+void AddRecoAllContribution(Int_t entry, Int_t eta, Int_t phi, Float_t RecoAll_Et[], Float_t L0_Reco_Et_Holder,
 	Float_t L1_Reco_Et_Holder, Float_t L2_Reco_Et_Holder, Float_t L3_Reco_Et_Holder, Float_t Had_Reco_Et_Holder) {
 	if (eta < 3) {
 		RecoAll_Et[entry] += Had_Reco_Et_Holder;
@@ -192,7 +218,7 @@ void AddRecoAllContribution(Int_t entry, Int_t eta, Int_t phi, Int_t numberofent
 // For each event, increment appropriate Et counters
 void IncrementEtCounters(Int_t entry, Int_t netcuts, Float_t Reco_Et[], Int_t N_EtCut[]) {
 	for (Int_t l = 0; l < netcuts; l++) {
-		if (Reco_Et[entry] >= l)
+		if (Reco_Et[entry] > l)
 			N_EtCut[l] += 1;
 	}
 }
@@ -219,6 +245,7 @@ void Average13x3CellEts(Int_t eta, Int_t phi, Int_t entries, Float_t L1_AverageC
 	L2_AverageFlipCell_Et[eta][phi] = ((L2_AverageFlipCell_Et[eta][phi] / 1000.) / entries);
 }
 
+// Avoid dividing by zero by setting denominator to 1 if would be 0
 float RecoEtRatio(Int_t N_Reco_Sig_EtCut, Int_t N_Reco_Back_EtCut) {
 	if (N_Reco_Back_EtCut > 0) {
 		return float(N_Reco_Sig_EtCut) / float(N_Reco_Back_EtCut);
@@ -308,3 +335,175 @@ void Output90PercentSignalInfo(ofstream& writefile, string RecoName, Int_t netcu
 		}
 	}
 }
+
+int Valid3x3EtaDim(Int_t RecoDefDim) {
+	if (RecoDefDim == 0 && RecoDefDim == 1 && RecoDefDim == 3) return 0;
+	else return 1;
+}
+
+int ValidPhiDim(Int_t RecoDefDim) {
+	if (RecoDefDim < 0 && RecoDefDim > 3) return 1;
+	else return 0;
+}
+
+int Valid13x3EtaDim(Int_t RecoDefDim) {
+	if (RecoDefDim == 0 && RecoDefDim == 1 && RecoDefDim == 3 && RecoDefDim == 5 && RecoDefDim == 7 && RecoDefDim == 9 && RecoDefDim == 11 && RecoDefDim == 13) return 0;
+	else return 1;
+}
+
+/*
+
+// Given a reconstructed energy definition return a ROC curve and 90% efficiency info
+// RecoCellDefs values must be as follows: L0 eta, L0 phi, L1 eta, L1 phi, L2 eta, L2 phi, L3 eta, L3 phi, Had eta, Had phi
+void GetRocAndEfficiencyFromRecoDef(TTree* tsig, TTree* tback, TCanvas* c1, Int_t RecoCellDef[10]) {
+	// Do some error handling to make sure the definition makes sense
+	if (Valid3x3EtaDim(RecoCellDef[0]) + ValidPhiDim(RecoCellDef[1]) + Valid13x3EtaDim(RecoCellDef[2]) + ValidPhiDim(RecoCellDef[3]) + Valid13x3EtaDim(RecoCellDef[4]) +
+		ValidPhiDim(RecoCellDef[5]) + Valid3x3EtaDim(RecoCellDef[6]) + ValidPhiDim(RecoCellDef[7]) + Valid3x3EtaDim(RecoCellDef[8]) + ValidPhiDim(RecoCellDef[9]) > 0) {
+		cout << "Invalid definition for reconstructed energy" << endl;
+		break;
+	}
+
+	// Define background variables to read in
+	Float_t L0_Back_Et[3][3];
+	Float_t L1_Back_Et[13][3];
+	Float_t L2_Back_Et[13][3];
+	Float_t L3_Back_Et[3][3];
+	Float_t Had_Back_Et[3][3];
+
+	// Define signal variables to read in
+	Float_t L0_Sig_Et[3][3];
+	Float_t L1_Sig_Et[13][3];
+	Float_t L2_Sig_Et[13][3];
+	Float_t L3_Sig_Et[3][3];
+	Float_t Had_Sig_Et[3][3];
+
+	// Make assignemnt between tree and declared variables for background
+	tback->SetBranchAddress("L0CellEt[3][3]", &L0_Back_Et[0][0]);  // Assigns to address of first array element
+	tback->SetBranchAddress("L1CellEt[13][3]", &L1_Back_Et[0][0]);  // Assigns to address of first array element
+	tback->SetBranchAddress("L2CellEt[13][3]", &L2_Back_Et[0][0]);  // Assigns to address of first array element
+	tback->SetBranchAddress("L3CellEt[3][3]", &L3_Back_Et[0][0]);  // Assigns to address of first array element
+	tback->SetBranchAddress("HadCellEt[3][3]", &Had_Back_Et[0][0]);  // Assigns to address of first array element
+
+	// Make assignment between tree and declared variables for signal
+	tsig->SetBranchAddress("L0CellEt[3][3]", &L0_Sig_Et[0][0]);  // Assigns to address of first array element
+	tsig->SetBranchAddress("L1CellEt[13][3]", &L1_Sig_Et[0][0]);  // Assigns to address of first array element
+	tsig->SetBranchAddress("L2CellEt[13][3]", &L2_Sig_Et[0][0]);  // Assigns to address of first array element
+	tsig->SetBranchAddress("L3CellEt[3][3]", &L3_Sig_Et[0][0]);  // Assigns to address of first array element
+	tsig->SetBranchAddress("HadCellEt[3][3]", &Had_Sig_Et[0][0]);  // Assigns to address of first array element
+
+	// Create string variables holding reconstructed energy definitions
+	string Reco_DefString = "Still need to make this work";
+
+	// Signal variables
+	Int_t sigentries = (Int_t)tsig->GetEntries();
+	Float_t Reco_Sig_Et[sigentries];
+
+	// Background variables
+	Int_t backentries = (Int_t)tback->GetEntries();
+	Float_t Reco_Back_Et[backentries];
+
+	// Number of events above Et threshold
+	const Int_t netcuts = 150;
+	Int_t N_Reco_Back_EtCut[netcuts] = { 0 };
+	Int_t N_Reco_Sig_EtCut[netcuts] = { 0 };
+
+
+	// Loop over all signal entries
+	for (Int_t i = 0; i < sigentries; i++) {
+		tsig->GetEntry(i);
+
+		Reco_Sig_Et[i] = 0;
+
+		//TrueEt[i] = mctau->Et() / 1000.;
+		//if (TrueEt[i] < 20.) continue;
+
+		// Set flag for preprocessing if necessary by considering sum of off-center phi cells for all layers
+		Int_t SigFlip = 0;
+		SigFlip = PhiFlip_Et(L0_Sig_Et, L1_Sig_Et, L2_Sig_Et, L3_Sig_Et, Had_Sig_Et);
+
+		// Loop over all cells to calculate average and reconstructed energies
+		// j = eta, k = phi
+		for (Int_t j = 0; j < 13; j++) {
+			for (Int_t k = 0; k < 3; k++) {
+				Float_t L0_Reco_Et_Holder;
+				Float_t L1_Reco_Et_Holder;
+				Float_t L2_Reco_Et_Holder;
+				Float_t L3_Reco_Et_Holder;
+				Float_t Had_Reco_Et_Holder;
+
+				PopulateRecoEtHolders(j, k, SigFlip, L0_Sig_Et, L0_Reco_Et_Holder, L1_Sig_Et, L1_Reco_Et_Holder, L2_Sig_Et, L2_Reco_Et_Holder,
+					L3_Sig_Et, L3_Reco_Et_Holder, Had_Sig_Et, Had_Reco_Et_Holder);
+
+				// Calculate reconstructed energy
+				AddRecoContribution(i, j, k, sigentries, Reco_Sig_Et, RecoCellDef, L0_Reco_Et_Holder, L1_Reco_Et_Holder, L2_Reco_Et_Holder,
+					L3_Reco_Et_Holder, Had_Reco_Et_Holder);
+			}
+		}
+
+		// Convert MeV to GeV
+		Reco_Sig_Et[i] /= 1000.;
+
+		// For each event, increment appropriate Et counters
+		IncrementEtCounters(i, netcuts, Reco_Sig_Et, N_Reco_Sig_EtCut);
+	}
+
+	// Now loop over all background entries
+	for (Int_t i = 0; i<backentries; i++) {
+		tback->GetEntry(i);  // This fills declared variables from ntuple
+
+		Reco_Back_Et[i] = 0;
+
+		// Set flag for preprocessing if necessary by considering sum of off-center phi cells for all layers
+		Int_t BackFlip = 0;
+		BackFlip = PhiFlip_Et(L0_Back_Et, L1_Back_Et, L2_Back_Et, L3_Back_Et, Had_Back_Et);
+
+		// Loop over all cells to calculate average  and reconstructed energies
+		// j = eta, k = phi
+		for (Int_t j = 0; j < 13; j++) {
+			for (Int_t k = 0; k < 3; k++) {
+				Float_t L0_Reco_Et_Holder;
+				Float_t L1_Reco_Et_Holder;
+				Float_t L2_Reco_Et_Holder;
+				Float_t L3_Reco_Et_Holder;
+				Float_t Had_Reco_Et_Holder;
+
+				PopulateRecoEtHolders(j, k, BackFlip, L0_Back_Et, L0_Reco_Et_Holder, L1_Back_Et, L1_Reco_Et_Holder, L2_Back_Et, L2_Reco_Et_Holder,
+					L3_Back_Et, L3_Reco_Et_Holder, Had_Back_Et, Had_Reco_Et_Holder);
+
+				// Calculate reconstructed energy
+				AddRecoContribution(i, j, k, backentries, Reco_Back_Et, RecoCellDef, L0_Reco_Et_Holder, L1_Reco_Et_Holder, L2_Reco_Et_Holder,
+					L3_Reco_Et_Holder, Had_Reco_Et_Holder);
+			}
+		}
+
+		// Convert reconstructed energy from MeV to GeV
+		Reco_Back_Et[i] /= 1000.;
+
+		// For each event, increment appropriate Et counters
+		IncrementEtCounters(i, netcuts, Reco_Back_Et, N_Reco_Back_EtCut);
+	}
+	
+	Float_t Reco_SigEtCutEfficiency[netcuts];
+	Float_t Reco_BackEtCutEfficiency[netcuts];
+
+	for (Int_t i = 0; i < netcuts; i++) {
+		RecoCutEfficiencies(Reco_SigEtCutEfficiency[i], Reco_BackEtCutEfficiency[i], N_Reco_Sig_EtCut[i], N_Reco_Sig_EtCut[0],
+			N_Reco_Back_EtCut[i], N_Reco_Back_EtCut[0]);
+	}
+
+	ofstream textfile("TauAllRecos.txt");
+
+	Output90PercentSignalInfo(textfile, "Reco 1 " + Reco_DefString, netcuts, Reco_SigEtCutEfficiency, Reco_BackEtCutEfficiency);
+
+	TGraph *groc = new TGraph(netcuts, Reco_BackEtCutEfficiency, Reco_SigEtCutEfficiency);
+	groc->SetName("reco_1_roc");
+	groc->SetTitle("Reco 1 ROC");
+	groc->GetXaxis()->SetTitle("Background Efficiency");
+	groc->GetXaxis()->SetLimits(0, 0.2);
+	groc->GetYaxis()->SetTitle("Signal Efficiency");
+
+	groc->Draw("ALP");
+	c1->Print(pdfname);
+}
+
+*/
