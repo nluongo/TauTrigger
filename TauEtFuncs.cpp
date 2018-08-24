@@ -79,6 +79,7 @@ void Add13x3AverageFlipCellContribution(Int_t eta, Int_t phi, Int_t FlipEt, Floa
 	}
 }
 
+// Given the eta definition, return bounds between which valid cells must fall
 void GetEtaBounds(Int_t& LowerBound, Int_t& UpperBound, Int_t EtaDef, Int_t LayerNumber) {
 	if (EtaDef == 0) {
 		LowerBound = -1;
@@ -96,13 +97,46 @@ void GetEtaBounds(Int_t& LowerBound, Int_t& UpperBound, Int_t EtaDef, Int_t Laye
 	}
 }
 
+// Given the phi definition, return bounds between which valid cells must fall
+void GetPhiBounds(Int_t& LowerBound, Int_t& UpperBound, Int_t PhiDef) {
+	if (PhiDef == 1) {
+		LowerBound = 1;
+		UpperBound = 1;
+	}
+	else if (PhiDef == 2) {
+		LowerBound = 0;
+		UpperBound = 1;
+	}
+	else if (PhiDef == 3) {
+		LowerBound = 0;
+		UpperBound = 2;
+	}
+}
+
+// Given the relevant layer and eta/phi definitions for that layer, calculate eta/phi bounds and add all cells within those bounds to the overall Et
+void AddLayerContribution(Float_t& Et, Int_t eta, Int_t phi, Int_t EtaDef, Int_t PhiDef, Float_t Et_Holder, Int_t LayerNum) {
+	Int_t Eta_LowerBound = 0, Eta_UpperBound = 0, Phi_LowerBound = 0, Phi_UpperBound = 0;
+	GetEtaBounds(Eta_LowerBound, Eta_UpperBound, EtaDef, LayerNum);
+	GetPhiBounds(Phi_LowerBound, Phi_UpperBound, PhiDef);
+	if (eta >= Eta_LowerBound && eta <= Eta_UpperBound && phi >= Phi_LowerBound && phi <= Phi_UpperBound) {
+		Et += Et_Holder;
+	}
+}
+
 // Add energies of current cells to the reconstruction energy with a given definition
+// RecoDefs values must be as follows: L0 eta, L0 phi, L1 eta, L1 phi, L2 eta, L2 phi, L3 eta, L3 phi, Had eta, Had phi
 void AddRecoContribution(Int_t entry, Int_t eta, Int_t phi, Float_t Reco_Et[], Int_t RecoDef[10], Float_t L0_Reco_Et_Holder, Float_t L1_Reco_Et_Holder,
 	Float_t L2_Reco_Et_Holder, Float_t L3_Reco_Et_Holder, Float_t Had_Reco_Et_Holder) {
-	Int_t L0_LowerBound = 0; Int_t L0_UpperBound = 0; Int_t L1_LowerBound = 0; Int_t L1_UpperBound = 0; Int_t L2_LowerBound = 0; Int_t L2_UpperBound = 0;
-		Int_t L3_LowerBound = 0; Int_t L3_UpperBound = 0; Int_t Had_LowerBound = 0; Int_t Had_UpperBound = 0;
 	// Add L0 piece
-
+	AddLayerContribution(Reco_Et[entry], eta, phi, RecoDef[0], RecoDef[1], L0_Reco_Et_Holder, 0);
+	// Add L1 piece
+	AddLayerContribution(Reco_Et[entry], eta, phi, RecoDef[2], RecoDef[3], L1_Reco_Et_Holder, 1);
+	// Add L2 piece
+	AddLayerContribution(Reco_Et[entry], eta, phi, RecoDef[4], RecoDef[5], L2_Reco_Et_Holder, 2);
+	// Add L3 piece
+	AddLayerContribution(Reco_Et[entry], eta, phi, RecoDef[6], RecoDef[7], L3_Reco_Et_Holder, 3);
+	// Add Had piece
+	AddLayerContribution(Reco_Et[entry], eta, phi, RecoDef[8], RecoDef[9], Had_Reco_Et_Holder, 4);
 }
 
 // Add energies of current cells to the reconstruction energy with definition 1 (1x1, 5x3, 5x3, 3x3, 3x3)
@@ -324,6 +358,7 @@ void OutputText13x3EtSubsets(ofstream& writefile, string LayerName, Float_t Aver
 	writefile << "11x3 energy: " << Average11x3Et << "		Ratio: " << Average11x3Et / AverageLayerEt << endl << endl;
 }
 
+// Output information on the highest Et cut that retains at least a 90% signal efficiency
 void Output90PercentSignalInfo(ofstream& writefile, string RecoName, Int_t netcuts, Float_t Sig_EtCutEfficiency[], Float_t Back_EtCutEfficiency[]) {
 	for (Int_t i = 0; i < netcuts; i++) {
 		if (Sig_EtCutEfficiency[netcuts-i-1] > 0.9) {
@@ -336,31 +371,34 @@ void Output90PercentSignalInfo(ofstream& writefile, string RecoName, Int_t netcu
 	}
 }
 
+// Check if the provided eta dimension is valid for a 3x3 layer
 int Valid3x3EtaDim(Int_t RecoDefDim) {
-	if (RecoDefDim == 0 && RecoDefDim == 1 && RecoDefDim == 3) return 0;
+	if (RecoDefDim == 0 || RecoDefDim == 1 || RecoDefDim == 3) return 0;
 	else return 1;
 }
 
+// Check if the provided eta dimension is valid for a 13x3 layer
+int Valid13x3EtaDim(Int_t RecoDefDim) {
+	if (RecoDefDim == 0 || RecoDefDim == 1 || RecoDefDim == 3 || RecoDefDim == 5 || RecoDefDim == 7 || RecoDefDim == 9 || RecoDefDim == 11 || RecoDefDim == 13) return 0;
+	else return 1;
+}
+
+// Check if the provided phi dimension is valid, does not depend on layer
 int ValidPhiDim(Int_t RecoDefDim) {
-	if (RecoDefDim < 0 && RecoDefDim > 3) return 1;
+	if (RecoDefDim < 0 || RecoDefDim > 3) return 1;
 	else return 0;
 }
 
-int Valid13x3EtaDim(Int_t RecoDefDim) {
-	if (RecoDefDim == 0 && RecoDefDim == 1 && RecoDefDim == 3 && RecoDefDim == 5 && RecoDefDim == 7 && RecoDefDim == 9 && RecoDefDim == 11 && RecoDefDim == 13) return 0;
-	else return 1;
-}
-
-/*
 
 // Given a reconstructed energy definition return a ROC curve and 90% efficiency info
 // RecoCellDefs values must be as follows: L0 eta, L0 phi, L1 eta, L1 phi, L2 eta, L2 phi, L3 eta, L3 phi, Had eta, Had phi
-void GetRocAndEfficiencyFromRecoDef(TTree* tsig, TTree* tback, TCanvas* c1, Int_t RecoCellDef[10]) {
+// IsFirstOrLast == 0 marks the first, == 1 the middle, == 2 the end
+void GetRocAndEfficiencyFromRecoDef(TTree* tsig, TTree* tback, TCanvas* c1, Int_t RecoCellDef[10], ofstream& textfile, string RecoName, Int_t IsFirstOrLast) {
 	// Do some error handling to make sure the definition makes sense
 	if (Valid3x3EtaDim(RecoCellDef[0]) + ValidPhiDim(RecoCellDef[1]) + Valid13x3EtaDim(RecoCellDef[2]) + ValidPhiDim(RecoCellDef[3]) + Valid13x3EtaDim(RecoCellDef[4]) +
 		ValidPhiDim(RecoCellDef[5]) + Valid3x3EtaDim(RecoCellDef[6]) + ValidPhiDim(RecoCellDef[7]) + Valid3x3EtaDim(RecoCellDef[8]) + ValidPhiDim(RecoCellDef[9]) > 0) {
 		cout << "Invalid definition for reconstructed energy" << endl;
-		break;
+		return;
 	}
 
 	// Define background variables to read in
@@ -390,9 +428,11 @@ void GetRocAndEfficiencyFromRecoDef(TTree* tsig, TTree* tback, TCanvas* c1, Int_
 	tsig->SetBranchAddress("L2CellEt[13][3]", &L2_Sig_Et[0][0]);  // Assigns to address of first array element
 	tsig->SetBranchAddress("L3CellEt[3][3]", &L3_Sig_Et[0][0]);  // Assigns to address of first array element
 	tsig->SetBranchAddress("HadCellEt[3][3]", &Had_Sig_Et[0][0]);  // Assigns to address of first array element
-
+	 
 	// Create string variables holding reconstructed energy definitions
-	string Reco_DefString = "Still need to make this work";
+	string Reco_DefString = "("+to_string(RecoCellDef[0])+"x"+to_string(RecoCellDef[1])+") , ("+to_string(RecoCellDef[2])+"x"+to_string(RecoCellDef[3])+") , ("+
+		to_string(RecoCellDef[4])+"x"+to_string(RecoCellDef[5])+") , ("+to_string(RecoCellDef[6])+"x"+to_string(RecoCellDef[7])+") , ("+to_string(RecoCellDef[8])+
+		"x"+to_string(RecoCellDef[9])+")";
 
 	// Signal variables
 	Int_t sigentries = (Int_t)tsig->GetEntries();
@@ -435,7 +475,7 @@ void GetRocAndEfficiencyFromRecoDef(TTree* tsig, TTree* tback, TCanvas* c1, Int_
 					L3_Sig_Et, L3_Reco_Et_Holder, Had_Sig_Et, Had_Reco_Et_Holder);
 
 				// Calculate reconstructed energy
-				AddRecoContribution(i, j, k, sigentries, Reco_Sig_Et, RecoCellDef, L0_Reco_Et_Holder, L1_Reco_Et_Holder, L2_Reco_Et_Holder,
+				AddRecoContribution(i, j, k, Reco_Sig_Et, RecoCellDef, L0_Reco_Et_Holder, L1_Reco_Et_Holder, L2_Reco_Et_Holder,
 					L3_Reco_Et_Holder, Had_Reco_Et_Holder);
 			}
 		}
@@ -471,7 +511,7 @@ void GetRocAndEfficiencyFromRecoDef(TTree* tsig, TTree* tback, TCanvas* c1, Int_
 					L3_Back_Et, L3_Reco_Et_Holder, Had_Back_Et, Had_Reco_Et_Holder);
 
 				// Calculate reconstructed energy
-				AddRecoContribution(i, j, k, backentries, Reco_Back_Et, RecoCellDef, L0_Reco_Et_Holder, L1_Reco_Et_Holder, L2_Reco_Et_Holder,
+				AddRecoContribution(i, j, k, Reco_Back_Et, RecoCellDef, L0_Reco_Et_Holder, L1_Reco_Et_Holder, L2_Reco_Et_Holder,
 					L3_Reco_Et_Holder, Had_Reco_Et_Holder);
 			}
 		}
@@ -491,19 +531,176 @@ void GetRocAndEfficiencyFromRecoDef(TTree* tsig, TTree* tback, TCanvas* c1, Int_
 			N_Reco_Back_EtCut[i], N_Reco_Back_EtCut[0]);
 	}
 
-	ofstream textfile("TauAllRecos.txt");
-
-	Output90PercentSignalInfo(textfile, "Reco 1 " + Reco_DefString, netcuts, Reco_SigEtCutEfficiency, Reco_BackEtCutEfficiency);
+	Output90PercentSignalInfo(textfile, "Reco " + Reco_DefString, netcuts, Reco_SigEtCutEfficiency, Reco_BackEtCutEfficiency);
 
 	TGraph *groc = new TGraph(netcuts, Reco_BackEtCutEfficiency, Reco_SigEtCutEfficiency);
-	groc->SetName("reco_1_roc");
-	groc->SetTitle("Reco 1 ROC");
+	groc->SetName(("reco_"+RecoName+"_roc").c_str());
+	groc->SetTitle(("Reco "+RecoName+" ROC").c_str());
 	groc->GetXaxis()->SetTitle("Background Efficiency");
 	groc->GetXaxis()->SetLimits(0, 0.2);
 	groc->GetYaxis()->SetTitle("Signal Efficiency");
 
 	groc->Draw("ALP");
-	c1->Print(pdfname);
+	if (IsFirstOrLast == 0) {
+		c1->Print("TauAllRecos.pdf(");
+	}
+	else if (IsFirstOrLast == 1) {
+		c1->Print("TauAllRecos.pdf");
+	}
+	else if (IsFirstOrLast == 2) {
+		c1->Print("TauAllRecos.pdf)");
+	}
 }
 
-*/
+void CombineL1AndL2Et(Float_t CombinedEt[13][3], Float_t L1Et[13][3], Float_t L2Et[13][3]) {
+	// j = eta, k = phi
+	for (Int_t j = 0; j < 13; j++) {
+		for (Int_t k = 0; k < 3; k++) {
+			CombinedEt[j][k] = L1Et[j][k] + L2Et[j][k];
+		}
+	}
+}
+
+void CalculateFCoreAndFillHisto(TTree* tree, Int_t numofentries, Float_t L1_Et[13][3], Float_t L2_Et[13][3], Int_t CoreDef[2], Int_t IsolationDef[2], TH1F* histo) {
+	for (Int_t i = 0; i < numofentries; i++) {
+		tree->GetEntry(i);
+		Float_t Core_Et = 0;
+		Float_t Isolation_Et = 0;
+		Float_t Combined_Et[13][3] = { 0 };
+
+		// Add elements of two layers cell-wise to get composite "layer"
+		CombineL1AndL2Et(Combined_Et, L1_Et, L2_Et);
+
+		// Set flag for preprocessing if necessary by considering sum of off-center phi cells for all layers
+		Int_t Flip = 0;
+		if (Combined_Et[6][2] > Combined_Et[6][0]) {
+			Flip = 1;
+		}
+
+		// j = eta, k = phi
+		for (Int_t j = 0; j < 13; j++) {
+			for (Int_t k = 0; k < 3; k++) {
+				Float_t Et_Holder;
+
+				if (Flip == 0) {
+					Et_Holder = Combined_Et[j][k];
+				}
+				else {
+					Et_Holder = Combined_Et[j][2 - k];
+				}
+
+				// Passing 1 to LayerNum to get 13x3 behavior
+				AddLayerContribution(Core_Et, j, k, CoreDef[0], CoreDef[1], Et_Holder, 1);
+				AddLayerContribution(Isolation_Et, j, k, IsolationDef[0], IsolationDef[1], Et_Holder, 1);
+			}
+		}
+		//if (i % 1000 == 0) {
+		//	cout << "[6][1]: " << Combined_Et[6][1] << endl;
+		//	cout << "[5][1]: " << Combined_Et[5][1] << endl;
+		//	cout << "[7][1]: " << Combined_Et[7][1] << endl;
+		//	cout << "Core: " << Core_Et << endl;
+		//	cout << "Isolation: " << Isolation_Et << endl << endl;
+		//}
+		Float_t FCore = Core_Et / Isolation_Et;
+		histo->Fill(FCore);
+	}
+}
+
+// Finds the bin above which roughly 95% of the signal resides, outputs the signal and background percentage to textfile at that cut
+int Find95PercentFCoreSignal(TH1F* sighisto, TH1F* backhisto, ofstream& textfile) {
+	Int_t numofbins = sighisto->GetNbinsX();
+	Int_t signumofentries = sighisto->GetEntries();
+	Int_t backnumofentries = backhisto->GetEntries();
+	Int_t SigCumulativeEvents = 0;
+	Int_t BackCumulativeEvents = 0;
+	Int_t Bin95Percent;
+	for (Int_t i = 0; i <= numofbins; i++) {
+		SigCumulativeEvents += sighisto->GetBinContent(i);
+		BackCumulativeEvents += backhisto->GetBinContent(i);
+		if (float(SigCumulativeEvents) / float(signumofentries) > 0.05) {
+			Bin95Percent = i;
+			textfile << "Signal Efficiency: " << 1 - (float(SigCumulativeEvents) / float(signumofentries)) << endl;
+			textfile << "Background Efficiency: " << 1 - (float(BackCumulativeEvents) / float(backnumofentries)) << endl << endl;
+			break;
+		}
+	}
+	return Bin95Percent;
+}
+
+void EvaluateFCoreForDef(TTree* tsig, TTree* tback, TCanvas* c1, TH1F* sighisto, TH1F* backhisto, Int_t CoreDef[2], Int_t IsolationDef[2], Float_t& Bin95PercentSignal, ofstream& textfile) {
+	// Do some error handling to make sure the definition makes sense
+	if (Valid13x3EtaDim(CoreDef[0]) + ValidPhiDim(CoreDef[1]) + Valid13x3EtaDim(IsolationDef[0]) + ValidPhiDim(IsolationDef[1]) > 0) {
+		cout << "Invalid definition for core or isolation energy" << endl;
+		return;
+	}
+
+	// Define background variables to read in
+	Float_t L1_Back_Et[13][3];
+	Float_t L2_Back_Et[13][3];
+
+	// Define signal variables to read in
+	Float_t L1_Sig_Et[13][3];
+	Float_t L2_Sig_Et[13][3];
+
+	// Make assignemnt between tree and declared variables for background
+	tback->SetBranchAddress("L1CellEt[13][3]", &L1_Back_Et[0][0]);  // Assigns to address of first array element
+	tback->SetBranchAddress("L2CellEt[13][3]", &L2_Back_Et[0][0]);  // Assigns to address of first array element
+
+	// Make assignment between tree and declared variables for signal
+	tsig->SetBranchAddress("L1CellEt[13][3]", &L1_Sig_Et[0][0]);  // Assigns to address of first array element
+	tsig->SetBranchAddress("L2CellEt[13][3]", &L2_Sig_Et[0][0]);  // Assigns to address of first array element
+
+	// Signal variables
+	Int_t sigentries = (Int_t)tsig->GetEntries();
+	Float_t sigentriesfloat = sigentries;
+
+	// Background variables
+	Int_t backentries = (Int_t)tback->GetEntries();
+	Float_t backentriesfloat = backentries;
+
+	CalculateFCoreAndFillHisto(tsig, sigentries, L1_Sig_Et, L2_Sig_Et, CoreDef, IsolationDef, sighisto);
+	CalculateFCoreAndFillHisto(tback, backentries, L1_Back_Et, L2_Back_Et, CoreDef, IsolationDef, backhisto);
+
+	Bin95PercentSignal = Find95PercentFCoreSignal(sighisto, backhisto, textfile) * 0.01;
+
+	sighisto->Scale(1 / sigentriesfloat);
+	backhisto->Scale(1 / backentriesfloat);
+}
+
+void SetCoreAndIsolationDefs(Int_t CoreEta, Int_t CorePhi, Int_t IsolationEta, Int_t IsolationPhi, Int_t CoreDef[2], Int_t IsolationDef[2]) {
+	CoreDef[0] = CoreEta;
+	CoreDef[1] = CorePhi;
+	IsolationDef[0] = IsolationEta;
+	IsolationDef[1] = IsolationPhi;
+}
+
+void OutputFCoreTextAndHisto(TTree* tsig, TTree* tback, TCanvas* c1, ofstream& textfile, Int_t CoreDef[2], Int_t IsolationDef[2], Int_t IsFirstOrLast) {
+	textfile << "Core definition: " << CoreDef[0] << "x" << CoreDef[1] << "	Isolation definition: " << IsolationDef[0] << "x" << IsolationDef[1] << endl;
+	string histotitle = "FCore (" + to_string(CoreDef[0]) + "x" + to_string(CoreDef[1]) + ") (" + to_string(IsolationDef[0]) + "x" + to_string(IsolationDef[1]) + ")";
+
+	// Define histograms
+	TH1F* sighisto = new TH1F("sighisto", "FCore; FCore; Entries", 100, 0., 1.);
+	TH1F* backhisto = new TH1F("backhisto", "FCore; FCore; Entries", 100, 0., 1.);
+
+	Float_t Bin95PercentSignal = 0;
+
+	EvaluateFCoreForDef(tsig, tback, c1, sighisto, backhisto, CoreDef, IsolationDef, Bin95PercentSignal, textfile);
+
+	sighisto->Draw("hist");
+	sighisto->SetLineColor(kRed);
+	sighisto->SetTitle(histotitle.c_str());
+	backhisto->Draw("same hist");
+	backhisto->SetLineColor(kBlue);
+	TLine *line = new TLine(Bin95PercentSignal, 0, Bin95PercentSignal, backhisto->GetMaximum());
+	line->Draw();
+
+	if (IsFirstOrLast == 0) {
+		c1->Print("TauFCore.pdf(");
+	}
+	else if (IsFirstOrLast == 1) {
+		c1->Print("TauFCore.pdf");
+	}
+	else {
+		c1->Print("TauFCore.pdf)");
+	}
+}
