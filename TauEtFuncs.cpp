@@ -125,128 +125,128 @@ void AddLayerContribution(Float_t& Et, Int_t eta, Int_t phi, Int_t EtaDef, Int_t
 
 // Add energies of current cells to the reconstruction energy with a given definition
 // RecoDefs values must be as follows: L0 eta, L0 phi, L1 eta, L1 phi, L2 eta, L2 phi, L3 eta, L3 phi, Had eta, Had phi
-void AddRecoContribution(Int_t entry, Int_t eta, Int_t phi, Float_t Reco_Et[], Int_t RecoDef[10], Float_t L0_Reco_Et_Holder, Float_t L1_Reco_Et_Holder,
+void AddRecoContribution(Int_t eta, Int_t phi, Float_t& Reco_Et, Int_t RecoDef[10], Float_t L0_Reco_Et_Holder, Float_t L1_Reco_Et_Holder,
 	Float_t L2_Reco_Et_Holder, Float_t L3_Reco_Et_Holder, Float_t Had_Reco_Et_Holder) {
 	// Add L0 piece
-	AddLayerContribution(Reco_Et[entry], eta, phi, RecoDef[0], RecoDef[1], L0_Reco_Et_Holder, 0);
+	AddLayerContribution(Reco_Et, eta, phi, RecoDef[0], RecoDef[1], L0_Reco_Et_Holder, 0);
 	// Add L1 piece
-	AddLayerContribution(Reco_Et[entry], eta, phi, RecoDef[2], RecoDef[3], L1_Reco_Et_Holder, 1);
+	AddLayerContribution(Reco_Et, eta, phi, RecoDef[2], RecoDef[3], L1_Reco_Et_Holder, 1);
 	// Add L2 piece
-	AddLayerContribution(Reco_Et[entry], eta, phi, RecoDef[4], RecoDef[5], L2_Reco_Et_Holder, 2);
+	AddLayerContribution(Reco_Et, eta, phi, RecoDef[4], RecoDef[5], L2_Reco_Et_Holder, 2);
 	// Add L3 piece
-	AddLayerContribution(Reco_Et[entry], eta, phi, RecoDef[6], RecoDef[7], L3_Reco_Et_Holder, 3);
+	AddLayerContribution(Reco_Et, eta, phi, RecoDef[6], RecoDef[7], L3_Reco_Et_Holder, 3);
 	// Add Had piece
-	AddLayerContribution(Reco_Et[entry], eta, phi, RecoDef[8], RecoDef[9], Had_Reco_Et_Holder, 4);
+	AddLayerContribution(Reco_Et, eta, phi, RecoDef[8], RecoDef[9], Had_Reco_Et_Holder, 4);
 }
 
 // Add energies of current cells to the reconstruction energy with definition 1 (1x1, 5x3, 5x3, 3x3, 3x3)
-void AddReco1Contribution(Int_t entry, Int_t eta, Int_t phi, Float_t Reco1_Et[], Float_t L0_Reco_Et_Holder,
+void AddReco1Contribution(Int_t eta, Int_t phi, Float_t& Reco1_Et, Float_t L0_Reco_Et_Holder,
 	Float_t L1_Reco_Et_Holder, Float_t L2_Reco_Et_Holder, Float_t L3_Reco_Et_Holder, Float_t Had_Reco_Et_Holder) {
 	if (eta < 3 && phi < 3) {
-		Reco1_Et[entry] += L3_Reco_Et_Holder;
-		Reco1_Et[entry] += Had_Reco_Et_Holder;
+		Reco1_Et += L3_Reco_Et_Holder;
+		Reco1_Et += Had_Reco_Et_Holder;
 	}
 	if (eta == 1 && phi == 1) {
-		Reco1_Et[entry] += L0_Reco_Et_Holder;
+		Reco1_Et += L0_Reco_Et_Holder;
 	}
 	if (eta > 3 && eta < 9) {
-		Reco1_Et[entry] += L1_Reco_Et_Holder;
-		Reco1_Et[entry] += L2_Reco_Et_Holder;
+		Reco1_Et += L1_Reco_Et_Holder;
+		Reco1_Et += L2_Reco_Et_Holder;
 	}
 }
 
 // Add energies of current cells to the reconstruction energy with definition 2 (3x3, 7x3, 5x3, 3x3, 3x3)
-void AddReco2Contribution(Int_t entry, Int_t eta, Int_t phi, Float_t Reco2_Et[], Float_t L0_Reco_Et_Holder,
+void AddReco2Contribution(Int_t eta, Int_t phi, Float_t& Reco2_Et, Float_t L0_Reco_Et_Holder,
 	Float_t L1_Reco_Et_Holder, Float_t L2_Reco_Et_Holder, Float_t L3_Reco_Et_Holder, Float_t Had_Reco_Et_Holder) {
 	if (eta < 3) {
-		Reco2_Et[entry] += L0_Reco_Et_Holder;
-		Reco2_Et[entry] += L3_Reco_Et_Holder;
-		Reco2_Et[entry] += Had_Reco_Et_Holder;
+		Reco2_Et += L0_Reco_Et_Holder;
+		Reco2_Et += L3_Reco_Et_Holder;
+		Reco2_Et += Had_Reco_Et_Holder;
 	}
 	if (eta > 2 && eta < 10) {
-		Reco2_Et[entry] += L1_Reco_Et_Holder;
+		Reco2_Et += L1_Reco_Et_Holder;
 	}
 	if (eta > 3 && eta < 9) {
-		Reco2_Et[entry] += L2_Reco_Et_Holder;
+		Reco2_Et += L2_Reco_Et_Holder;
 	}
 }
 
 // Add energies of current cells to the reconstruction energy with definition 3 (1x2, 5x2, 5x2, 1x2, 3x3)
-void AddReco3Contribution(Int_t entry, Int_t eta, Int_t phi, Float_t Reco3_Et[], Float_t L0_Reco_Et_Holder, 
+void AddReco3Contribution(Int_t eta, Int_t phi, Float_t& Reco3_Et, Float_t L0_Reco_Et_Holder, 
 	Float_t L1_Reco_Et_Holder, Float_t L2_Reco_Et_Holder, Float_t L3_Reco_Et_Holder, Float_t Had_Reco_Et_Holder) {
 	if (eta < 3 && phi < 3) {
-		Reco3_Et[entry] += Had_Reco_Et_Holder;
+		Reco3_Et += Had_Reco_Et_Holder;
 	}
 	if (eta == 1 && phi < 2) {
-		Reco3_Et[entry] += L0_Reco_Et_Holder;
-		Reco3_Et[entry] += L3_Reco_Et_Holder;
+		Reco3_Et += L0_Reco_Et_Holder;
+		Reco3_Et += L3_Reco_Et_Holder;
 	}
 	if (eta > 3 && eta < 9 && phi < 2) {
-		Reco3_Et[entry] += L1_Reco_Et_Holder;
-		Reco3_Et[entry] += L2_Reco_Et_Holder;
+		Reco3_Et += L1_Reco_Et_Holder;
+		Reco3_Et += L2_Reco_Et_Holder;
 	}
 }
 
 // Add energies of current cells to the reconstruction energy with definition 3 (1x3, 5x3, 5x3, 1x3, 3x3)
-void AddReco3AContribution(Int_t entry, Int_t eta, Int_t phi, Float_t Reco3A_Et[], Float_t L0_Reco_Et_Holder,
+void AddReco3AContribution(Int_t eta, Int_t phi, Float_t& Reco3A_Et, Float_t L0_Reco_Et_Holder,
 	Float_t L1_Reco_Et_Holder, Float_t L2_Reco_Et_Holder, Float_t L3_Reco_Et_Holder, Float_t Had_Reco_Et_Holder) {
 	if (eta < 3) {
-		Reco3A_Et[entry] += Had_Reco_Et_Holder;
+		Reco3A_Et += Had_Reco_Et_Holder;
 	}
 	if (eta == 1) {
-		Reco3A_Et[entry] += L0_Reco_Et_Holder;
-		Reco3A_Et[entry] += L3_Reco_Et_Holder;
+		Reco3A_Et += L0_Reco_Et_Holder;
+		Reco3A_Et += L3_Reco_Et_Holder;
 	}
 	if (eta > 3 && eta < 9) {
-		Reco3A_Et[entry] += L1_Reco_Et_Holder;
-		Reco3A_Et[entry] += L2_Reco_Et_Holder;
+		Reco3A_Et += L1_Reco_Et_Holder;
+		Reco3A_Et += L2_Reco_Et_Holder;
 	}
 }
 
 // Add energies of current cells to the reconstruction energy with definition 4 (1x2, 5x2, 5x2, 1x2, None)
-void AddReco4Contribution(Int_t entry, Int_t eta, Int_t phi, Float_t Reco4_Et[], Float_t L0_Reco_Et_Holder,
+void AddReco4Contribution(Int_t eta, Int_t phi, Float_t& Reco4_Et, Float_t L0_Reco_Et_Holder,
 	Float_t L1_Reco_Et_Holder, Float_t L2_Reco_Et_Holder, Float_t L3_Reco_Et_Holder, Float_t Had_Reco_Et_Holder) {
 	if (eta == 1 && phi < 2) {
-		Reco4_Et[entry] += L0_Reco_Et_Holder;
-		Reco4_Et[entry] += L3_Reco_Et_Holder;
+		Reco4_Et += L0_Reco_Et_Holder;
+		Reco4_Et += L3_Reco_Et_Holder;
 	}
 	if (eta > 3 && eta < 9 && phi < 2) {
-		Reco4_Et[entry] += L1_Reco_Et_Holder;
-		Reco4_Et[entry] += L2_Reco_Et_Holder;
+		Reco4_Et += L1_Reco_Et_Holder;
+		Reco4_Et += L2_Reco_Et_Holder;
 	}
 }
 
 // Add energies of current cells to the reconstruction energy with definition 5 (1x2, 5x2, 5x2, None, None)
-void AddReco5Contribution(Int_t entry, Int_t eta, Int_t phi, Float_t Reco5_Et[], Float_t L0_Reco_Et_Holder,
+void AddReco5Contribution(Int_t eta, Int_t phi, Float_t& Reco5_Et, Float_t L0_Reco_Et_Holder,
 	Float_t L1_Reco_Et_Holder, Float_t L2_Reco_Et_Holder, Float_t L3_Reco_Et_Holder, Float_t Had_Reco_Et_Holder) {
 	if (eta == 1 && phi < 2) {
-		Reco5_Et[entry] += L0_Reco_Et_Holder;
+		Reco5_Et += L0_Reco_Et_Holder;
 	}
 	if (eta > 3 && eta < 9 && phi < 2) {
-		Reco5_Et[entry] += L1_Reco_Et_Holder;
-		Reco5_Et[entry] += L2_Reco_Et_Holder;
+		Reco5_Et += L1_Reco_Et_Holder;
+		Reco5_Et += L2_Reco_Et_Holder;
 	}
 }
 
 // Add energies of current cells to the reconstruction energy with definition 6 (None, 5x2, 5x2, None, None)
-void AddReco6Contribution(Int_t entry, Int_t eta, Int_t phi, Float_t Reco6_Et[], Float_t L0_Reco_Et_Holder,
+void AddReco6Contribution(Int_t eta, Int_t phi, Float_t& Reco6_Et, Float_t L0_Reco_Et_Holder,
 	Float_t L1_Reco_Et_Holder, Float_t L2_Reco_Et_Holder, Float_t L3_Reco_Et_Holder, Float_t Had_Reco_Et_Holder) {
 	if (eta > 3 && eta < 9 && phi < 2) {
-		Reco6_Et[entry] += L1_Reco_Et_Holder;
-		Reco6_Et[entry] += L2_Reco_Et_Holder;
+		Reco6_Et += L1_Reco_Et_Holder;
+		Reco6_Et += L2_Reco_Et_Holder;
 	}
 }
 
 // Add energies of current cells to the reconstruction energy with all avaiable cells (3x3, 13x3, 13x3, 3x3, 3x3)
-void AddRecoAllContribution(Int_t entry, Int_t eta, Int_t phi, Float_t RecoAll_Et[], Float_t L0_Reco_Et_Holder,
+void AddRecoAllContribution(Int_t eta, Int_t phi, Float_t& RecoAll_Et, Float_t L0_Reco_Et_Holder,
 	Float_t L1_Reco_Et_Holder, Float_t L2_Reco_Et_Holder, Float_t L3_Reco_Et_Holder, Float_t Had_Reco_Et_Holder) {
 	if (eta < 3) {
-		RecoAll_Et[entry] += Had_Reco_Et_Holder;
-		RecoAll_Et[entry] += L0_Reco_Et_Holder;
-		RecoAll_Et[entry] += L3_Reco_Et_Holder;
+		RecoAll_Et += Had_Reco_Et_Holder;
+		RecoAll_Et += L0_Reco_Et_Holder;
+		RecoAll_Et += L3_Reco_Et_Holder;
 	}
-	RecoAll_Et[entry] += L1_Reco_Et_Holder;
-	RecoAll_Et[entry] += L2_Reco_Et_Holder;
+	RecoAll_Et += L1_Reco_Et_Holder;
+	RecoAll_Et += L2_Reco_Et_Holder;
 }
 
 // For each event, increment appropriate Et counters
@@ -389,6 +389,18 @@ int ValidPhiDim(Int_t RecoDefDim) {
 	else return 0;
 }
 
+void SetRecoDef(Int_t RecoDef[10], Int_t i, Int_t j, Int_t k, Int_t l, Int_t m, Int_t n, Int_t p, Int_t q, Int_t r, Int_t s) {
+	RecoDef[0] = i;
+	RecoDef[1] = j;
+	RecoDef[2] = k;
+	RecoDef[3] = l;
+	RecoDef[4] = m;
+	RecoDef[5] = n;
+	RecoDef[6] = p;
+	RecoDef[7] = q;
+	RecoDef[8] = r;
+	RecoDef[9] = s;
+}
 
 // Given a reconstructed energy definition return a ROC curve and 90% efficiency info
 // RecoCellDefs values must be as follows: L0 eta, L0 phi, L1 eta, L1 phi, L2 eta, L2 phi, L3 eta, L3 phi, Had eta, Had phi
@@ -475,7 +487,7 @@ void GetRocAndEfficiencyFromRecoDef(TTree* tsig, TTree* tback, TCanvas* c1, Int_
 					L3_Sig_Et, L3_Reco_Et_Holder, Had_Sig_Et, Had_Reco_Et_Holder);
 
 				// Calculate reconstructed energy
-				AddRecoContribution(i, j, k, Reco_Sig_Et, RecoCellDef, L0_Reco_Et_Holder, L1_Reco_Et_Holder, L2_Reco_Et_Holder,
+				AddRecoContribution(j, k, Reco_Sig_Et[i], RecoCellDef, L0_Reco_Et_Holder, L1_Reco_Et_Holder, L2_Reco_Et_Holder,
 					L3_Reco_Et_Holder, Had_Reco_Et_Holder);
 			}
 		}
@@ -511,7 +523,7 @@ void GetRocAndEfficiencyFromRecoDef(TTree* tsig, TTree* tback, TCanvas* c1, Int_
 					L3_Back_Et, L3_Reco_Et_Holder, Had_Back_Et, Had_Reco_Et_Holder);
 
 				// Calculate reconstructed energy
-				AddRecoContribution(i, j, k, Reco_Back_Et, RecoCellDef, L0_Reco_Et_Holder, L1_Reco_Et_Holder, L2_Reco_Et_Holder,
+				AddRecoContribution(j, k, Reco_Back_Et[i], RecoCellDef, L0_Reco_Et_Holder, L1_Reco_Et_Holder, L2_Reco_Et_Holder,
 					L3_Reco_Et_Holder, Had_Reco_Et_Holder);
 			}
 		}
@@ -561,70 +573,75 @@ void CombineL1AndL2Et(Float_t CombinedEt[13][3], Float_t L1Et[13][3], Float_t L2
 	}
 }
 
+// Calculates FCore for a given entry
+float CalculateFCore(Float_t L1_Et[13][3], Float_t L2_Et[13][3], Int_t CoreDef[2], Int_t IsolationDef[2]) {
+	Float_t Core_Et = 0;
+	Float_t Isolation_Et = 0;
+	Float_t Combined_Et[13][3] = { 0 };
+
+	// Add elements of two layers cell-wise to get composite "layer"
+	CombineL1AndL2Et(Combined_Et, L1_Et, L2_Et);
+
+	// Set flag for preprocessing if necessary by considering sum of off-center phi cells for all layers
+	Int_t Flip = 0;
+	if (Combined_Et[6][2] > Combined_Et[6][0]) {
+		Flip = 1;
+	}
+
+	// j = eta, k = phi
+	for (Int_t j = 0; j < 13; j++) {
+		for (Int_t k = 0; k < 3; k++) {
+			Float_t Et_Holder;
+
+			if (Flip == 0) {
+				Et_Holder = Combined_Et[j][k];
+			}
+			else {
+				Et_Holder = Combined_Et[j][2 - k];
+			}
+
+			// Passing 1 to LayerNum to get 13x3 behavior
+			AddLayerContribution(Core_Et, j, k, CoreDef[0], CoreDef[1], Et_Holder, 1);
+			AddLayerContribution(Isolation_Et, j, k, IsolationDef[0], IsolationDef[1], Et_Holder, 1);
+		}
+	}
+
+	return (Core_Et / Isolation_Et);
+}
+
 void CalculateFCoreAndFillHisto(TTree* tree, Int_t numofentries, Float_t L1_Et[13][3], Float_t L2_Et[13][3], Int_t CoreDef[2], Int_t IsolationDef[2], TH1F* histo) {
 	for (Int_t i = 0; i < numofentries; i++) {
 		tree->GetEntry(i);
-		Float_t Core_Et = 0;
-		Float_t Isolation_Et = 0;
-		Float_t Combined_Et[13][3] = { 0 };
 
-		// Add elements of two layers cell-wise to get composite "layer"
-		CombineL1AndL2Et(Combined_Et, L1_Et, L2_Et);
-
-		// Set flag for preprocessing if necessary by considering sum of off-center phi cells for all layers
-		Int_t Flip = 0;
-		if (Combined_Et[6][2] > Combined_Et[6][0]) {
-			Flip = 1;
-		}
-
-		// j = eta, k = phi
-		for (Int_t j = 0; j < 13; j++) {
-			for (Int_t k = 0; k < 3; k++) {
-				Float_t Et_Holder;
-
-				if (Flip == 0) {
-					Et_Holder = Combined_Et[j][k];
-				}
-				else {
-					Et_Holder = Combined_Et[j][2 - k];
-				}
-
-				// Passing 1 to LayerNum to get 13x3 behavior
-				AddLayerContribution(Core_Et, j, k, CoreDef[0], CoreDef[1], Et_Holder, 1);
-				AddLayerContribution(Isolation_Et, j, k, IsolationDef[0], IsolationDef[1], Et_Holder, 1);
-			}
-		}
-		//if (i % 1000 == 0) {
-		//	cout << "[6][1]: " << Combined_Et[6][1] << endl;
-		//	cout << "[5][1]: " << Combined_Et[5][1] << endl;
-		//	cout << "[7][1]: " << Combined_Et[7][1] << endl;
-		//	cout << "Core: " << Core_Et << endl;
-		//	cout << "Isolation: " << Isolation_Et << endl << endl;
-		//}
-		Float_t FCore = Core_Et / Isolation_Et;
+		Float_t FCore = CalculateFCore(L1_Et, L2_Et, CoreDef, IsolationDef);
 		histo->Fill(FCore);
 	}
 }
 
-// Finds the bin above which roughly 95% of the signal resides, outputs the signal and background percentage to textfile at that cut
-int Find95PercentFCoreSignal(TH1F* sighisto, TH1F* backhisto, ofstream& textfile) {
-	Int_t numofbins = sighisto->GetNbinsX();
-	Int_t signumofentries = sighisto->GetEntries();
-	Int_t backnumofentries = backhisto->GetEntries();
-	Int_t SigCumulativeEvents = 0;
-	Int_t BackCumulativeEvents = 0;
+// Finds the bin of the given histogram above which 95% of the signal resides
+int Find95PercentBin(TH1F* histo) {
+	Int_t numofbins = histo->GetNbinsX();
+	Int_t numofentries = histo->GetEntries();
+	Int_t CumulativeEvents = 0;
 	Int_t Bin95Percent;
 	for (Int_t i = 0; i <= numofbins; i++) {
-		SigCumulativeEvents += sighisto->GetBinContent(i);
-		BackCumulativeEvents += backhisto->GetBinContent(i);
-		if (float(SigCumulativeEvents) / float(signumofentries) > 0.05) {
-			Bin95Percent = i;
-			textfile << "Signal Efficiency: " << 1 - (float(SigCumulativeEvents) / float(signumofentries)) << endl;
-			textfile << "Background Efficiency: " << 1 - (float(BackCumulativeEvents) / float(backnumofentries)) << endl << endl;
-			break;
+		CumulativeEvents += histo->GetBinContent(i);
+		if (float(CumulativeEvents) / float(numofentries) > 0.05) {
+			return i;
 		}
 	}
-	return Bin95Percent;
+	cout << "No 95% bin found" << endl;
+	return 0;
+}
+
+// Return percentage of events in the histogram above the given bin
+float GetEfficiencyAboveBin(Int_t bin, TH1F* histo) {
+	Int_t numofentries = histo->GetEntries();
+	Int_t CumulativeEvents = 0;
+	for (Int_t i = 0; i <= bin; i++) {
+		CumulativeEvents += histo->GetBinContent(i);
+	}
+	return 1 - (float(CumulativeEvents) / float(numofentries));
 }
 
 void EvaluateFCoreForDef(TTree* tsig, TTree* tback, TCanvas* c1, TH1F* sighisto, TH1F* backhisto, Int_t CoreDef[2], Int_t IsolationDef[2], Float_t& Bin95PercentSignal, ofstream& textfile) {
@@ -661,7 +678,11 @@ void EvaluateFCoreForDef(TTree* tsig, TTree* tback, TCanvas* c1, TH1F* sighisto,
 	CalculateFCoreAndFillHisto(tsig, sigentries, L1_Sig_Et, L2_Sig_Et, CoreDef, IsolationDef, sighisto);
 	CalculateFCoreAndFillHisto(tback, backentries, L1_Back_Et, L2_Back_Et, CoreDef, IsolationDef, backhisto);
 
-	Bin95PercentSignal = Find95PercentFCoreSignal(sighisto, backhisto, textfile) * 0.01;
+	Bin95PercentSignal = Find95PercentBin(sighisto) * 0.01;
+
+	textfile << "Signal Efficiency: " << GetEfficiencyAboveBin(Bin95PercentSignal, sighisto) << endl;
+	textfile << "Background Efficiency: " << GetEfficiencyAboveBin(Bin95PercentSignal, backhisto) << endl << endl;
+
 
 	sighisto->Scale(1 / sigentriesfloat);
 	backhisto->Scale(1 / backentriesfloat);
