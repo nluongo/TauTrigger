@@ -39,5 +39,6 @@ void TauFCore() {
 			}
 		}
 	}
+
 	textfile.close();
 }
