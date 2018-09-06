@@ -192,16 +192,16 @@ void TauEtStudy() {
 
 				// Calculate reconstructed energy
 				// Reconstruction definition 1
-				AddReco1Contribution(i, j, k, Reco1_Sig_Et, L0_Reco_Et_Holder, L1_Reco_Et_Holder, L2_Reco_Et_Holder,
+				AddReco1Contribution(j, k, Reco1_Sig_Et[i], L0_Reco_Et_Holder, L1_Reco_Et_Holder, L2_Reco_Et_Holder,
 					L3_Reco_Et_Holder, Had_Reco_Et_Holder);
 				// Reconstruction definition 2
-				AddReco2Contribution(i, j, k, Reco2_Sig_Et, L0_Reco_Et_Holder, L1_Reco_Et_Holder, L2_Reco_Et_Holder,
+				AddReco2Contribution(j, k, Reco2_Sig_Et[i], L0_Reco_Et_Holder, L1_Reco_Et_Holder, L2_Reco_Et_Holder,
 					L3_Reco_Et_Holder, Had_Reco_Et_Holder);
 				// Reconstruction definition 3
-				AddReco3Contribution(i, j, k, Reco3_Sig_Et, L0_Reco_Et_Holder, L1_Reco_Et_Holder, L2_Reco_Et_Holder,
+				AddReco3Contribution(j, k, Reco3_Sig_Et[i], L0_Reco_Et_Holder, L1_Reco_Et_Holder, L2_Reco_Et_Holder,
 					L3_Reco_Et_Holder, Had_Reco_Et_Holder);
 				// Reconstruction definition 3A
-				AddReco3AContribution(i, j, k, Reco3A_Sig_Et, L0_Reco_Et_Holder, L1_Reco_Et_Holder, L2_Reco_Et_Holder,
+				AddReco3AContribution(j, k, Reco3A_Sig_Et[i], L0_Reco_Et_Holder, L1_Reco_Et_Holder, L2_Reco_Et_Holder,
 					L3_Reco_Et_Holder, Had_Reco_Et_Holder);
 				// Reconstruction definition 3B, done manually as the holder variables are pre-processed
 				if (j < 3) {
@@ -216,16 +216,16 @@ void TauEtStudy() {
 					Reco3B_Sig_Et[i] += L2_Sig_Et[j][k];
 				}
 				// Reconstruction definition 4
-				AddReco4Contribution(i, j, k, Reco4_Sig_Et, L0_Reco_Et_Holder, L1_Reco_Et_Holder, L2_Reco_Et_Holder,
+				AddReco4Contribution(j, k, Reco4_Sig_Et[i], L0_Reco_Et_Holder, L1_Reco_Et_Holder, L2_Reco_Et_Holder,
 					L3_Reco_Et_Holder, Had_Reco_Et_Holder);
 				// Reconstruction definition 5
-				AddReco5Contribution(i, j, k, Reco5_Sig_Et, L0_Reco_Et_Holder, L1_Reco_Et_Holder, L2_Reco_Et_Holder,
+				AddReco5Contribution(j, k, Reco5_Sig_Et[i], L0_Reco_Et_Holder, L1_Reco_Et_Holder, L2_Reco_Et_Holder,
 					L3_Reco_Et_Holder, Had_Reco_Et_Holder);
 				// Reconstruction definition 6
-				AddReco6Contribution(i, j, k, Reco6_Sig_Et, L0_Reco_Et_Holder, L1_Reco_Et_Holder, L2_Reco_Et_Holder,
+				AddReco6Contribution(j, k, Reco6_Sig_Et[i], L0_Reco_Et_Holder, L1_Reco_Et_Holder, L2_Reco_Et_Holder,
 					L3_Reco_Et_Holder, Had_Reco_Et_Holder);
 				// Reconstruction all definition
-				AddRecoAllContribution(i, j, k, RecoAll_Sig_Et, L0_Reco_Et_Holder, L1_Reco_Et_Holder, L2_Reco_Et_Holder,
+				AddRecoAllContribution(j, k, RecoAll_Sig_Et[i], L0_Reco_Et_Holder, L1_Reco_Et_Holder, L2_Reco_Et_Holder,
 					L3_Reco_Et_Holder, Had_Reco_Et_Holder);
 
 				if (numofpi0 == 0) {
@@ -345,16 +345,16 @@ void TauEtStudy() {
 
 				// Calculate reconstructed energy
 				// Reconstruction definition 1
-				AddReco1Contribution(i, j, k, Reco1_Back_Et, L0_Reco_Et_Holder, L1_Reco_Et_Holder, L2_Reco_Et_Holder,
+				AddReco1Contribution(j, k, Reco1_Back_Et[i], L0_Reco_Et_Holder, L1_Reco_Et_Holder, L2_Reco_Et_Holder,
 					L3_Reco_Et_Holder, Had_Reco_Et_Holder);
 				// Reconstruction definition 2
-				AddReco2Contribution(i, j, k, Reco2_Back_Et, L0_Reco_Et_Holder, L1_Reco_Et_Holder, L2_Reco_Et_Holder,
+				AddReco2Contribution(j, k, Reco2_Back_Et[i], L0_Reco_Et_Holder, L1_Reco_Et_Holder, L2_Reco_Et_Holder,
 					L3_Reco_Et_Holder, Had_Reco_Et_Holder);
 				// Reconstruction definition 3
-				AddReco3Contribution(i, j, k, Reco3_Back_Et, L0_Reco_Et_Holder, L1_Reco_Et_Holder, L2_Reco_Et_Holder,
+				AddReco3Contribution(j, k, Reco3_Back_Et[i], L0_Reco_Et_Holder, L1_Reco_Et_Holder, L2_Reco_Et_Holder,
 					L3_Reco_Et_Holder, Had_Reco_Et_Holder);
 				// Reconstruction definition 3A
-				AddReco3AContribution(i, j, k, Reco3A_Back_Et, L0_Reco_Et_Holder, L1_Reco_Et_Holder, L2_Reco_Et_Holder,
+				AddReco3AContribution(j, k, Reco3A_Back_Et[i], L0_Reco_Et_Holder, L1_Reco_Et_Holder, L2_Reco_Et_Holder,
 					L3_Reco_Et_Holder, Had_Reco_Et_Holder);
 				// Reconstruction definition 3B, done manually as the holder variables are pre-processed
 				if (j < 3) {
@@ -369,16 +369,16 @@ void TauEtStudy() {
 					Reco3B_Back_Et[i] += L2_Back_Et[j][k];
 				}
 				// Reconstruction definition 4
-				AddReco4Contribution(i, j, k, Reco4_Back_Et, L0_Reco_Et_Holder, L1_Reco_Et_Holder, L2_Reco_Et_Holder,
+				AddReco4Contribution(j, k, Reco4_Back_Et[i], L0_Reco_Et_Holder, L1_Reco_Et_Holder, L2_Reco_Et_Holder,
 					L3_Reco_Et_Holder, Had_Reco_Et_Holder);
 				// Reconstruction definition 5
-				AddReco5Contribution(i, j, k, Reco5_Back_Et, L0_Reco_Et_Holder, L1_Reco_Et_Holder, L2_Reco_Et_Holder,
+				AddReco5Contribution(j, k, Reco5_Back_Et[i], L0_Reco_Et_Holder, L1_Reco_Et_Holder, L2_Reco_Et_Holder,
 					L3_Reco_Et_Holder, Had_Reco_Et_Holder);
 				// Reconstruction definition 6
-				AddReco6Contribution(i, j, k, Reco6_Back_Et, L0_Reco_Et_Holder, L1_Reco_Et_Holder, L2_Reco_Et_Holder,
+				AddReco6Contribution(j, k, Reco6_Back_Et[i], L0_Reco_Et_Holder, L1_Reco_Et_Holder, L2_Reco_Et_Holder,
 					L3_Reco_Et_Holder, Had_Reco_Et_Holder);
 				// Reconstruction all definition
-				AddRecoAllContribution(i, j, k, RecoAll_Back_Et, L0_Reco_Et_Holder, L1_Reco_Et_Holder, L2_Reco_Et_Holder,
+				AddRecoAllContribution(j, k, RecoAll_Back_Et[i], L0_Reco_Et_Holder, L1_Reco_Et_Holder, L2_Reco_Et_Holder,
 					L3_Reco_Et_Holder, Had_Reco_Et_Holder);
 			}
 		}
